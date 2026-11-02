@@ -113,3 +113,36 @@ describe("resumenMateria", () => {
     expect(resumenMateria("PE")).toEqual({ nivel: 1, dominadas: 0, total: 60, dominio: 0 });
   });
 });
+
+// ───────── registrarRespuestas (lo que hay detrás de registrar y registrarVarias)
+import { registrarRespuestas } from "./progreso.js";
+
+describe("registrarRespuestas", () => {
+  const base = () => ({ xp: 20, preguntas: { x: { intentos: 1, aciertos: 1, ultimo: true } }, simulacros: [], diasEstudio: ["2026-01-01"] });
+  const lista = [["x", false], ["y", true], ["z", true], ["y", true]];
+
+  it("varias de golpe dan lo mismo que una por una", () => {
+    const porUna = lista.reduce((d, r) => registrarRespuestas(d, [r]), base());
+    expect(registrarRespuestas(base(), lista)).toEqual(porUna);
+  });
+  it("suma XP solo por aciertos, cuenta intentos y deja el último resultado", () => {
+    const r = registrarRespuestas(base(), lista);
+    expect(r.xp).toBe(20 + 30);
+    expect(r.preguntas.x).toEqual({ intentos: 2, aciertos: 1, ultimo: false });
+    expect(r.preguntas.y).toEqual({ intentos: 2, aciertos: 2, ultimo: true });
+    expect(r.preguntas.z).toEqual({ intentos: 1, aciertos: 1, ultimo: true });
+  });
+  it("añade hoy a los días de estudio, una sola vez", () => {
+    const hoy = new Date().toISOString().slice(0, 10);
+    expect(registrarRespuestas(base(), lista).diasEstudio).toEqual(["2026-01-01", hoy]);
+  });
+  it("no modifica el progreso original; sin respuestas devuelve el mismo objeto", () => {
+    const original = base();
+    registrarRespuestas(original, lista);
+    expect(original).toEqual(base());
+    expect(registrarRespuestas(original, [])).toBe(original);
+  });
+  it("conserva el orden de las claves del progreso", () => {
+    expect(Object.keys(registrarRespuestas(base(), lista))).toEqual(["xp", "preguntas", "simulacros", "diasEstudio"]);
+  });
+});

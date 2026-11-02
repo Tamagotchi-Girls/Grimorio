@@ -8,6 +8,7 @@ import CursorMenu from "./CursorMenu.jsx";
 import Encabezado from "./Encabezado.jsx";
 import FilaTema from "./FilaTema.jsx";
 import Pips from "./Pips.jsx";
+import { estadoOpcion, textoExplicacion } from "./Reactivo.jsx";
 import Stat from "./Stat.jsx";
 import ZonaEscena from "./ZonaEscena.jsx";
 
@@ -149,5 +150,28 @@ describe("Aparato", () => {
   });
   it("la superposición va antes de la barra", () => {
     expect(salida({ superposicion: h("div", { className: "level-up" }) })).toContain('<div class="aparato"><div class="level-up"></div><header');
+  });
+});
+
+describe("Reactivo: estadoOpcion y textoExplicacion", () => {
+  const ok = { correcta: true }, no = { correcta: false };
+  it("sin revelar solo marca la elegida", () => {
+    expect(estadoOpcion(no, 1, 1, false)).toBe("elegida");
+    expect(estadoOpcion(ok, 0, 1, false)).toBe("");
+    expect(estadoOpcion(ok, 0, undefined, false)).toBe("");
+  });
+  it("al revelar: correcta ok, elegida equivocada mal, el resto apagada", () => {
+    expect(estadoOpcion(ok, 0, 2, true)).toBe("ok");
+    expect(estadoOpcion(ok, 2, 2, true)).toBe("ok");
+    expect(estadoOpcion(no, 2, 2, true)).toBe("mal");
+    expect(estadoOpcion(no, 1, 2, true)).toBe("apagada");
+    expect(estadoOpcion(no, 1, undefined, true)).toBe("apagada");
+  });
+  const reactivo = { explicacion: "Porque sí.", opcionesBarajadas: [no, ok] };
+  it("texto de la explicación según la respuesta", () => {
+    expect(textoExplicacion(reactivo, 1)).toBe("✓ Correcto. Porque sí.");
+    expect(textoExplicacion(reactivo, 0)).toBe("✗ Incorrecto. Porque sí.");
+    expect(textoExplicacion(reactivo, undefined)).toBe("Sin responder. Porque sí.");
+    expect(textoExplicacion(reactivo, null)).toBe("Sin responder. Porque sí.");
   });
 });
