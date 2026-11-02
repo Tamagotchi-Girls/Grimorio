@@ -7,7 +7,10 @@ import { reactivosPorTemaEnSimulacro, textoReglaSimulacro } from "../lib/conteos
 import { indiceDeTecla } from "../lib/teclado.js";
 import Reactivo from "../components/Reactivo.jsx";
 import Sprite from "../components/Sprite.jsx";
-import Escena from "../components/Escena.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
+import Encabezado from "../components/Encabezado.jsx";
+import Confirmar from "../components/Confirmar.jsx";
+import FilaTema from "../components/FilaTema.jsx";
 
 function nuevoSimulacro() {
   // los mismos reactivos de cada tema, para que el examen cubra todos los temas, en orden aleatorio.
@@ -71,13 +74,8 @@ export default function Simulacro({ prog, ir, perfil }) {
   if (fase === "intro") {
     return (
       <div className="vista">
-        <div className="escena-wrap">
-          <Escena hada={perfil.avatar} dia={prog.racha} />
-        </div>
-        <section className="intro">
-          <p className="eyebrow">Simulacro de examen</p>
-          <h1>¿Lista la varita? Es hora del simulacro</h1>
-        </section>
+        <ZonaEscena hada={perfil.avatar} dia={prog.racha} />
+        <Encabezado eyebrow="Simulacro de examen" titulo="¿Lista la varita? Es hora del simulacro" />
         <section className="reglas px">
           <ul>
             <li><Sprite nombre="chispaRosa" escala={3} />{textoReglaSimulacro(TEMAS)}</li>
@@ -98,9 +96,7 @@ export default function Simulacro({ prog, ir, perfil }) {
     const r = reactivos[i];
     return (
       <div className="vista">
-        <div className="escena-wrap">
-          <Escena hada={perfil.avatar} dia={prog.racha} compacto />
-        </div>
+        <ZonaEscena hada={perfil.avatar} dia={prog.racha} compacto />
         <div className="sim-cabeza">
           <span className="eyebrow exam-pregunta">PREGUNTA {i + 1}/{reactivos.length} · {contestadas} respondidas</span>
           <button className={`marcar px ${marcadas[i] ? "on" : ""}`} onClick={() => setMarcadas(m => ({ ...m, [i]: !m[i] }))} aria-pressed={!!marcadas[i]}>
@@ -127,7 +123,14 @@ export default function Simulacro({ prog, ir, perfil }) {
         </div>
         {i < reactivos.length - 1 && <div className="acciones fin"><button className="btn-texto" onClick={() => setConfirmar(true)}>Terminar simulacro</button></div>}
         {confirmar && (
-          <div className="confirmar px" role="alertdialog" aria-label="Confirmar">
+          <Confirmar
+            etiqueta="Confirmar"
+            centrado
+            textoCancelar="Seguir revisando"
+            onCancelar={() => setConfirmar(false)}
+            textoConfirmar="Terminar"
+            onConfirmar={terminar}
+          >
             <p>
               {contestadas < reactivos.length
                 ? `Te faltan ${reactivos.length - contestadas} preguntas sin responder. Cuentan como incorrectas.`
@@ -135,11 +138,7 @@ export default function Simulacro({ prog, ir, perfil }) {
               {Object.values(marcadas).filter(Boolean).length > 0 && `Tienes ${Object.values(marcadas).filter(Boolean).length} marcadas para revisar. `}
               ¿Terminar y ver tu calificación?
             </p>
-            <div className="acciones centro">
-              <button className="btn px" onClick={() => setConfirmar(false)}>Seguir revisando</button>
-              <button className="btn px pink" onClick={terminar}>Terminar</button>
-            </div>
-          </div>
+          </Confirmar>
         )}
       </div>
     );
@@ -150,9 +149,7 @@ export default function Simulacro({ prog, ir, perfil }) {
   const medalla = medallaDeSimulacro(resultado.calificacion);
   return (
     <div className="vista">
-      <div className="escena-wrap">
-        <Escena hada={perfil.avatar} dia={prog.racha} secuencia="nivel" compacto />
-      </div>
+      <ZonaEscena hada={perfil.avatar} dia={prog.racha} secuencia="nivel" compacto />
       <section className="final px">
         <Sprite nombre={medalla} escala={7} className={medalla === "copa" ? "festejo" : ""} />
         <p className="eyebrow">Tu calificación</p>
@@ -166,11 +163,9 @@ export default function Simulacro({ prog, ir, perfil }) {
           const pt = resultado.porTema[t.id];
           if (!pt) return null;
           return (
-            <div className="barra-tema" key={t.id}>
-              <span className="bt-nombre">{t.id}. {t.corto}</span>
+            <FilaTema key={t.id} tema={t} conteo={`${pt.ok}/${pt.total}`}>
               <span className="bt-barra"><i style={{ width: `${(pt.ok / pt.total) * 100}%` }} className={pt.ok === pt.total ? "ok" : pt.ok === 0 ? "mal" : ""} /></span>
-              <span className="bt-num">{pt.ok}/{pt.total}</span>
-            </div>
+            </FilaTema>
           );
         })}
         {flojos.length > 0 && (
