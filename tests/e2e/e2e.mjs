@@ -554,6 +554,50 @@ async function correr() {
     await ctx.close();
   });
 
+  // I. scroll: `.pantalla` es el contenedor con scroll
+  const scrollPantalla = (p) => p.locator(".pantalla").evaluate((e) => e.scrollTop);
+  const bajar = (p) => p.locator(".pantalla").evaluate((e) => { e.scrollTop = e.scrollHeight; return e.scrollTop; });
+  const celular = async () => {
+    const ctx = await contexto({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage(); const errs = conErrores(p);
+    await p.goto(URL_APP); await sembrar(p, SEMBRADO); await p.reload(); await p.waitForLoadState("networkidle"); await p.waitForTimeout(300);
+    return { ctx, p, errs };
+  };
+
+  await paso("I1 al navegar a otra vista (botones y botón atrás) la nueva empieza arriba", async () => {
+    const { ctx, p, errs } = await celular();
+    await ir(p, "/progreso");
+    assert.ok(await bajar(p) > 100, "la vista de Logros debería tener scroll en celular");
+    await p.getByRole("button", { name: "REPASO" }).click(); await p.waitForTimeout(300);
+    assert.equal(await scrollPantalla(p), 0, "Repaso empieza arriba");
+    assert.ok(await bajar(p) > 50);
+    await p.getByRole("button", { name: "INICIO" }).click(); await p.waitForTimeout(300);
+    assert.equal(await scrollPantalla(p), 0, "Inicio empieza arriba");
+    await bajar(p);
+    await p.goBack(); await p.waitForTimeout(300);
+    assert.equal(await scrollPantalla(p), 0, "al volver atrás también empieza arriba");
+    assert.deepEqual(errs, []);
+    await ctx.close();
+  });
+
+  await paso("I2 los resultados del simulacro empiezan arriba y se ve la calificación grande", async () => {
+    const { ctx, p, errs } = await celular();
+    await ir(p, "/simulacro");
+    await p.getByRole("button", { name: "Empezar simulacro" }).click();
+    for (let k = 0; k < 9; k++) { await p.keyboard.press("1"); await p.keyboard.press("ArrowRight"); await p.keyboard.press("ArrowRight"); }
+    await p.getByRole("button", { name: "Terminar simulacro" }).click();
+    const dialogo = p.getByRole("alertdialog", { name: "Confirmar" });
+    await dialogo.waitFor();
+    await bajar(p);
+    await dialogo.getByRole("button", { name: "Terminar", exact: true }).click();
+    await p.locator(".calif").waitFor();
+    await p.waitForTimeout(300);
+    assert.equal(await scrollPantalla(p), 0);
+    const [calif, pantalla] = await Promise.all([p.locator(".calif").boundingBox(), p.locator(".pantalla").boundingBox()]);
+    assert.ok(calif.y >= pantalla.y && calif.y + calif.height <= pantalla.y + pantalla.height, "la calificación está a la vista");
+    assert.deepEqual(errs, []);
+    await ctx.close();
+  });
+
   await paso("A5 la página principal no produjo errores de JavaScript", async () => assert.deepEqual(erroresA, []));
 }
 

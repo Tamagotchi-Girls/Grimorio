@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { irAlInicio } from "./scroll.js";
 
 // "#/tema/3?x=1" → "tema/3"; "" y "#/" → "".
 export const rutaDe = (hash) => hash.replace(/^#\/?/, "").split("?")[0] || "";
@@ -8,7 +9,7 @@ export const rutaDe = (hash) => hash.replace(/^#\/?/, "").split("?")[0] || "";
 export function useRuta() {
   const [hash, setHash] = useState(() => location.hash);
   useEffect(() => {
-    const alCambiar = () => { setHash(location.hash); window.scrollTo(0, 0); };
+    const alCambiar = () => { setHash(location.hash); irAlInicio(); };
     addEventListener("hashchange", alCambiar);
     return () => removeEventListener("hashchange", alCambiar);
   }, []);

@@ -1,17 +1,21 @@
+import { useContenido } from "../../data/ContenidoContext.jsx";
 import { XP_POR_ACIERTO } from "../../lib/nivel.js";
 import { medallaDeSimulacro } from "../../lib/medallas.js";
 import { temasFlojos } from "../../lib/simulacro.js";
 import Reactivo from "../../components/Reactivo.jsx";
 import Sprite from "../../components/Sprite.jsx";
+import ZonaEscena from "../../components/ZonaEscena.jsx";
 import FilaTema from "../../components/FilaTema.jsx";
 
 const claseBarra = ({ ok, total }) => (ok === total ? "ok" : ok === 0 ? "mal" : "");
 
-export default function SimulacroResultados({ temas: TEMAS, resultado, reactivos, respuestas, ir, onOtro }) {
+export default function SimulacroResultados({ resultado, reactivos, respuestas, perfil, racha, ir, onOtro }) {
+  const { TEMAS } = useContenido();
   const flojos = temasFlojos(TEMAS, resultado.porTema);
   const medalla = medallaDeSimulacro(resultado.calificacion);
   return (
-    <>
+    <div className="vista">
+      <ZonaEscena hada={perfil.avatar} dia={racha} secuencia="nivel" compacto />
       <section className="final px">
         <Sprite nombre={medalla} escala={7} className={medalla === "copa" ? "festejo" : ""} />
         <p className="eyebrow">Tu calificación</p>
@@ -53,6 +57,6 @@ export default function SimulacroResultados({ temas: TEMAS, resultado, reactivos
           </article>
         ))}
       </div>
-    </>
+    </div>
   );
 }

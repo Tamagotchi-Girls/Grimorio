@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useContenido } from "../data/ContenidoContext.jsx";
 import { calificar, nuevoSimulacro, respuestasARegistrar } from "./simulacro.js";
+import { irAlInicio } from "./scroll.js";
 import { useTeclasRespuesta } from "./useTeclasRespuesta.js";
 
 // Texto del cuadro "¿Terminar?": cuántas faltan por responder y cuántas se marcaron para revisar.
@@ -37,8 +38,10 @@ export function useSimulacro(prog) {
     prog.registrarVarias(respuestasARegistrar(reactivos, respuestas));
     prog.guardarSimulacro(res);
     setResultado(res);
-    window.scrollTo(0, 0);
   };
+
+  // los resultados se ven desde arriba (la calificación grande), no donde estaba el cuadro de confirmar
+  useEffect(() => { if (resultado) irAlInicio(); }, [resultado]);
 
   useTeclasRespuesta({
     activo: fase === "jugando",

@@ -1,5 +1,6 @@
 import Reactivo from "../../components/Reactivo.jsx";
 import Sprite from "../../components/Sprite.jsx";
+import ZonaEscena from "../../components/ZonaEscena.jsx";
 import Confirmar from "../../components/Confirmar.jsx";
 import { mensajeConfirmacion } from "../../lib/useSimulacro.js";
 
@@ -9,10 +10,11 @@ const etiquetaCelda = (s, k) =>
   `Pregunta ${k + 1}${s.respuestas[k] !== undefined ? ", respondida" : ""}${s.marcadas[k] ? ", marcada" : ""}`;
 
 // `s` es lo que devuelve useSimulacro().
-export default function SimulacroPregunta({ s }) {
+export default function SimulacroPregunta({ s, perfil, racha }) {
   const total = s.reactivos.length;
   return (
-    <>
+    <div className="vista">
+      <ZonaEscena hada={perfil.avatar} dia={racha} compacto />
       <div className="sim-cabeza">
         <span className="eyebrow exam-pregunta">PREGUNTA {s.i + 1}/{total} · {s.contestadas} respondidas</span>
         <button className={`marcar px ${s.marcadas[s.i] ? "on" : ""}`} onClick={s.alternarMarca} aria-pressed={!!s.marcadas[s.i]}>
@@ -45,6 +47,6 @@ export default function SimulacroPregunta({ s }) {
           <p>{mensajeConfirmacion(s.contestadas, total, s.totalMarcadas)}</p>
         </Confirmar>
       )}
-    </>
+    </div>
   );
 }
