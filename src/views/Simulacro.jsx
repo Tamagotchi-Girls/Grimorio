@@ -3,15 +3,15 @@ import { PREGUNTAS, TEMAS } from "../data/contenido.js";
 import { barajar, prepararReactivo } from "../lib/progreso.js";
 import { XP_POR_ACIERTO } from "../lib/nivel.js";
 import { medallaDeSimulacro } from "../lib/medallas.js";
+import { reactivosPorTemaEnSimulacro, textoReglaSimulacro } from "../lib/conteos.js";
+import { indiceDeTecla } from "../lib/teclado.js";
 import Reactivo from "../components/Reactivo.jsx";
 import Sprite from "../components/Sprite.jsx";
 import Escena from "../components/Escena.jsx";
 
-const N = 20;
-
 function nuevoSimulacro() {
-  // 2 reactivos por tema para que el examen cubra los 10 temas, en orden aleatorio.
-  const elegidos = TEMAS.flatMap(t => barajar(PREGUNTAS.filter(p => p.tema === t.id)).slice(0, N / TEMAS.length));
+  // los mismos reactivos de cada tema, para que el examen cubra todos los temas, en orden aleatorio.
+  const elegidos = TEMAS.flatMap(t => barajar(PREGUNTAS.filter(p => p.tema === t.id)).slice(0, reactivosPorTemaEnSimulacro(TEMAS)));
   return barajar(elegidos).map(prepararReactivo);
 }
 
@@ -59,14 +59,14 @@ export default function Simulacro({ prog, ir, perfil }) {
   useEffect(() => {
     if (fase !== "jugando") return;
     const h = (e) => {
-      const n = parseInt(e.key, 10);
-      if (n >= 1 && n <= 4) { e.preventDefault(); setResp(r => ({ ...r, [i]: n - 1 })); }
+      const opcion = indiceDeTecla(e.key, reactivos[i].opciones.length);
+      if (opcion !== null) { e.preventDefault(); setResp(r => ({ ...r, [i]: opcion })); }
       else if (e.key === "ArrowRight" && i < reactivos.length - 1) setI(i + 1);
       else if (e.key === "ArrowLeft" && i > 0) setI(i - 1);
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
-  }, [fase, i, reactivos.length]);
+  }, [fase, i, reactivos]);
 
   if (fase === "intro") {
     return (
@@ -80,7 +80,7 @@ export default function Simulacro({ prog, ir, perfil }) {
         </section>
         <section className="reglas px">
           <ul>
-            <li><Sprite nombre="chispaRosa" escala={3} />20 reactivos al azar: 2 de cada uno de los 10 temas.</li>
+            <li><Sprite nombre="chispaRosa" escala={3} />{textoReglaSimulacro(TEMAS)}</li>
             <li><Sprite nombre="chispaRosa" escala={3} />No verás si acertaste hasta terminar, como en el examen real.</li>
             <li><Sprite nombre="chispaRosa" escala={3} />Puedes moverte entre preguntas y marcar las que quieras revisar.</li>
             <li><Sprite nombre="chispaRosa" escala={3} />Cada simulacro sale distinto, con las opciones en otro orden.</li>

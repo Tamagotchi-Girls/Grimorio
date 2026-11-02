@@ -1,6 +1,7 @@
 import LZString from "lz-string";
 import { leerProgreso } from "./progreso.js";
 import { normalizarPerfil, normalizarTransferencia } from "./validacion.js";
+import { MATERIAS } from "../data/materias.js";
 
 // Tamaños máximos de un enlace de importación. Un enlace real con las dos materias llena (y todos
 // los simulacros) mide unos 5 100 caracteres comprimido y unos 15 000 de JSON (lo mide y exige
@@ -14,7 +15,7 @@ const MAX_HASH = MAX_PARAMETRO * 3 + 64;
 
 // Enlace de transferencia: `#/importar?d=<datos comprimidos>`. Sin servidor, todo viaja en el enlace.
 export function crearEnlace(perfil) {
-  const datos = { version: 1, perfil: normalizarPerfil(perfil) ?? perfil, progreso: { PE: leerProgreso("PE"), FP: leerProgreso("FP") } };
+  const datos = { version: 1, perfil: normalizarPerfil(perfil) ?? perfil, progreso: Object.fromEntries(MATERIAS.map((m) => [m.id, leerProgreso(m.id)])) };
   const codificado = LZString.compressToEncodedURIComponent(JSON.stringify(datos));
   return `${location.origin}${location.pathname}#/importar?d=${encodeURIComponent(codificado)}`;
 }

@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { PREGUNTAS, TEMAS } from "../data/contenido.js";
 import { prepararReactivo } from "../lib/progreso.js";
 import { XP_POR_ACIERTO } from "../lib/nivel.js";
-import { dosDigitos } from "../lib/formato.js";
 import { medallaDeTema } from "../lib/medallas.js";
+import { temaSiguiente, textoNumeroDeTema } from "../lib/conteos.js";
+import { indiceDeTecla, textoTeclas } from "../lib/teclado.js";
 import Codigo from "../components/Codigo.jsx";
 import Reactivo from "../components/Reactivo.jsx";
 import Sprite from "../components/Sprite.jsx";
@@ -40,8 +41,8 @@ export default function Tema({ id, prog, ir, perfil }) {
     if (pestana !== "practicar" || terminado) return;
     const h = (e) => {
       if (e.target.closest && e.target.closest("input, textarea")) return;
-      const n = parseInt(e.key, 10);
-      if (n >= 1 && n <= 4 && !respondida) { e.preventDefault(); elegir(n - 1); }
+      const opcion = indiceDeTecla(e.key, actual.opciones.length);
+      if (opcion !== null && !respondida) { e.preventDefault(); elegir(opcion); }
       else if (e.key === "Enter" && respondida) { e.preventDefault(); siguiente(); }
     };
     window.addEventListener("keydown", h);
@@ -51,7 +52,7 @@ export default function Tema({ id, prog, ir, perfil }) {
   if (!tema) return <div className="vista"><p>Ese tema no existe.</p><button className="btn px" onClick={() => ir("temas")}>Ver temas</button></div>;
 
   const aciertos = reactivos.filter((r, k) => respuestas[k] !== undefined && r.opcionesBarajadas[respuestas[k]].correcta).length;
-  const siguienteTema = TEMAS.find(t => t.id === id + 1);
+  const siguienteTema = temaSiguiente(TEMAS, id);
   const medalla = medallaDeTema(aciertos, reactivos.length);
 
   return (
@@ -66,7 +67,7 @@ export default function Tema({ id, prog, ir, perfil }) {
       </div>
       <button className="volver" onClick={() => ir("temas")}>← Temas</button>
       <section className="intro">
-        <p className="eyebrow">Tema {dosDigitos(tema.id)} de 10</p>
+        <p className="eyebrow">{textoNumeroDeTema(tema.id, TEMAS)}</p>
         <h1>{tema.nombre}</h1>
       </section>
 
@@ -105,7 +106,7 @@ export default function Tema({ id, prog, ir, perfil }) {
           <Reactivo key={`${ronda}-${i}`} reactivo={actual} seleccion={sel} onElegir={elegir} revelar={respondida} />
           {respondida && actual.opcionesBarajadas[sel].correcta && <span className="xp-flotante" aria-live="polite">+{XP_POR_ACIERTO} XP</span>}
           <div className="acciones">
-            <span className="ayuda">Teclas 1–4 para responder · Enter para seguir</span>
+            <span className="ayuda">{textoTeclas(actual.opciones.length)} · Enter para seguir</span>
             <button className="btn px pink" disabled={!respondida} onClick={siguiente}>
               {i === reactivos.length - 1 ? "Ver resultado" : "Siguiente →"}
             </button>

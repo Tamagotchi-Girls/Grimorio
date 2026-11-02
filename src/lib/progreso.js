@@ -2,10 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { CONTENIDO, PREGUNTAS } from "../data/contenido.js";
 import { claveProgreso, escribirJSON, leerJSON } from "./almacenamiento.js";
 import { XP_POR_ACIERTO, nivelDe, xpEnNivel } from "./nivel.js";
-import { LIMITES, normalizarProgreso, progresoVacio } from "./validacion.js";
+import { normalizarProgreso, progresoVacio } from "./validacion.js";
+import { MAX_DIAS_RACHA, MAX_SIMULACROS } from "./constantes.js";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
-const conDia = (dias = []) => [...new Set([...dias, hoy()])].slice(-LIMITES.diasEstudio);
+const conDia = (dias = []) => [...new Set([...dias, hoy()])].slice(-MAX_DIAS_RACHA);
 
 export const leerProgreso = (materia) => normalizarProgreso(leerJSON(claveProgreso(materia)), materia);
 
@@ -32,7 +33,7 @@ export function useProgreso(materia = "PE") {
   }, []);
 
   const guardarSimulacro = useCallback((resultado) => {
-    setDatos(d => ({ ...d, diasEstudio: conDia(d.diasEstudio), simulacros: [...d.simulacros, resultado].slice(-LIMITES.simulacros) }));
+    setDatos(d => ({ ...d, diasEstudio: conDia(d.diasEstudio), simulacros: [...d.simulacros, resultado].slice(-MAX_SIMULACROS) }));
   }, []);
 
   const reiniciar = useCallback(() => setDatos(progresoVacio()), []);

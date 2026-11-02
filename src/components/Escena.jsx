@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import Hada, { normalizarHada } from "./Hada.jsx";
 import { dosDigitos } from "../lib/formato.js";
+import { PAISAJE } from "../lib/dimensiones.js";
 
 // Escala de la escena: cabe a lo ancho de su columna y deja espacio vertical para el resto de la
 // pantalla. Se redondea hacia abajo a múltiplos de 1/8 (0.25 = 1x del paisaje original, 0.5 = 2x…)
@@ -9,13 +10,13 @@ const PASO = 0.125, MIN = 0.25, MAX = 1;
 const DOS_COLUMNAS = "(min-width: 1100px) and (min-aspect-ratio: 4/3)";
 
 function calcularEscala(el, compacto) {
-  const columna = el.parentElement?.clientWidth || el.clientWidth || 960;
+  const columna = el.parentElement?.clientWidth || el.clientWidth || PAISAJE.ancho;
   const pantalla = el.closest(".pantalla");
   const alto = pantalla?.clientHeight || window.innerHeight;
   const anchas = window.matchMedia(DOS_COLUMNAS).matches;
   // en dos columnas la escena comparte columna solo con el diálogo; en una, con todo el contenido
   const maxAlto = anchas ? alto - 130 : alto * (compacto ? 0.3 : 0.48);
-  let s = Math.min(MAX, columna / 960, maxAlto / 540);
+  let s = Math.min(MAX, columna / PAISAJE.ancho, maxAlto / PAISAJE.alto);
   // en pantallas chicas se afina el paso para aprovechar el ancho (en celular la diferencia no se nota)
   const paso = s >= 0.5 ? PASO : 1 / 64;
   s = Math.floor(s / paso) * paso;

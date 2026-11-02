@@ -3,12 +3,13 @@
 // pasar por aquí. Siempre devuelven datos nuevos y bien formados; lo irrecuperable se descarta.
 import { CONTENIDO } from "../data/contenido.js";
 import { normalizarHada } from "../components/Hada.jsx";
+import { MAX_DIAS_RACHA, MAX_SIMULACROS } from "./constantes.js";
 
 export const LIMITES = Object.freeze({
   xp: 1_000_000,
   intentos: 100_000,
-  simulacros: 10,
-  diasEstudio: 90,
+  simulacros: MAX_SIMULACROS,
+  diasEstudio: MAX_DIAS_RACHA,
   nombre: 32,
   totalSimulacro: 500,
 });

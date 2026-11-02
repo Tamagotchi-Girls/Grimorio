@@ -2,7 +2,9 @@ import { useMemo } from "react";
 import Escena from "../components/Escena.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 import Sprite from "../components/Sprite.jsx";
-import { TEMAS } from "../data/contenido.js";
+import { PREGUNTAS, TEMAS } from "../data/contenido.js";
+import { materiaPorId } from "../data/materias.js";
+import { textoCaminoSimulacro, textoCaminoTemas, textoResumenMateria, textoTemasCompletos } from "../lib/conteos.js";
 import { XP_POR_NIVEL } from "../lib/nivel.js";
 
 const FRASES = [
@@ -28,9 +30,9 @@ export default function Inicio({ prog, ir, perfil, materia, onMateria }) {
       </div>
 
       <section className="intro">
-        <p className="eyebrow">{materia === "PE" ? "Programación Estructurada · IL352" : "Fundamentos de Programación"}</p>
+        <p className="eyebrow">{materiaPorId(materia)?.etiqueta}</p>
         <h1>Guía de estudio para el departamental</h1>
-        <p className="lead">60 reactivos de los 10 temas del programa. Repasa con apuntes, practica por tema y haz simulacros. Tu progreso se guarda en este dispositivo.</p>
+        <p className="lead">{textoResumenMateria(TEMAS, PREGUNTAS)} Repasa con apuntes, practica por tema y haz simulacros. Tu progreso se guarda en este dispositivo.</p>
       </section>
       <div className="atajos-perfil">
         <button className="btn-texto cambiar-materia" onClick={onMateria}>← Cambiar de materia</button>
@@ -42,14 +44,14 @@ export default function Inicio({ prog, ir, perfil, materia, onMateria }) {
           <Sprite nombre="libro" escala={5} />
           <span>
             <b>Repasar por tema</b>
-            <small>Apuntes y 6 reactivos por tema, con explicación al instante.</small>
+            <small>{textoCaminoTemas(TEMAS, PREGUNTAS)}</small>
           </span>
         </button>
         <button className="camino px mint" onClick={() => ir("simulacro")}>
           <Sprite nombre="corazon" escala={5} />
           <span>
             <b>Simulacro de examen</b>
-            <small>20 reactivos al azar. Calificación al final.</small>
+            <small>{textoCaminoSimulacro(TEMAS)}</small>
           </span>
         </button>
       </div>
@@ -65,8 +67,8 @@ export default function Inicio({ prog, ir, perfil, materia, onMateria }) {
         </div>
         <div className="stat px">
           <span className="stat-k">Dominados</span>
-          <span className="stat-v">{prog.dominadas}<small>/60</small></span>
-          <span className="stat-s">{temasDominados} de 10 temas completos</span>
+          <span className="stat-v">{prog.dominadas}<small>/{PREGUNTAS.length}</small></span>
+          <span className="stat-s">{textoTemasCompletos(temasDominados, TEMAS)}</span>
         </div>
         <div className="stat px">
           <span className="stat-k">Último simulacro</span>

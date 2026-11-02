@@ -1,6 +1,13 @@
 /* Layout: un aparato tipo tamagotchi centrado (barra de estado arriba, pantalla, botonera abajo)
    sobre una mesa de cuadritos. Bordes "pixel" con esquinas recortadas hechos con box-shadow. */
 :root {
+  /* tamaño de los PNG de public/sprites: los mismos valores están en lib/dimensiones.js (lo comprueba un test) */
+  --paisaje-ancho: 960px;
+  --paisaje-alto: 540px;
+  --paisaje-tira: 3840px;
+  --hada-ancho: 320px;
+  --hada-alto: 150px;
+  --hada-escena-y: 344px; /* dónde se paran los pies del hada sobre el paisaje */
   /* aparato (crema en día y en noche, como un juguete) */
   --chrome: #fff6d6;
   --chrome-ink: #4b3a78;
@@ -553,29 +560,29 @@ button:disabled { opacity: .58; filter: grayscale(.35); }
 .aparato { max-width: 1000px; }
 .pantalla { overflow: hidden; }
 .hada-img {
-  display: block; width: 320px; height: 150px; max-width: none;
+  display: block; width: var(--hada-ancho); height: var(--hada-alto); max-width: none;
   image-rendering: pixelated; image-rendering: crisp-edges;
 }
-.avatar-oficial { display: block; width: 160px; height: 150px; overflow: hidden; position: relative; }
+.avatar-oficial { display: block; width: calc(var(--hada-ancho) / 2); height: var(--hada-alto); overflow: hidden; position: relative; }
 .avatar-oficial > .hada-img { position: absolute; left: 50%; transform: translateX(-50%); }
 
 .escena-oficial {
   --scene-scale: 1;
-  position: relative; width: 100%; height: calc(540px * var(--scene-scale));
+  position: relative; width: 100%; height: calc(var(--paisaje-alto) * var(--scene-scale));
   overflow: hidden; background: #2f2862; border-bottom: 3px solid var(--line);
 }
 .escena-lienzo {
   position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: calc(960px * var(--scene-scale)); height: calc(540px * var(--scene-scale));
+  width: calc(var(--paisaje-ancho) * var(--scene-scale)); height: calc(var(--paisaje-alto) * var(--scene-scale));
   background-image: var(--paisaje); background-repeat: no-repeat;
-  background-size: calc(3840px * var(--scene-scale)) calc(540px * var(--scene-scale));
+  background-size: calc(var(--paisaje-tira) * var(--scene-scale)) calc(var(--paisaje-alto) * var(--scene-scale));
   background-position: 0 0;
   image-rendering: pixelated; image-rendering: crisp-edges;
   animation: paisaje-oficial 1280ms steps(4) infinite;
 }
 .hada-en-escena {
-  position: absolute; left: calc(320px * var(--scene-scale)); top: calc(344px * var(--scene-scale));
-  width: calc(320px * var(--scene-scale)); height: calc(150px * var(--scene-scale));
+  position: absolute; left: calc((var(--paisaje-ancho) - var(--hada-ancho)) / 2 * var(--scene-scale)); top: calc(var(--hada-escena-y) * var(--scene-scale));
+  width: calc(var(--hada-ancho) * var(--scene-scale)); height: calc(var(--hada-alto) * var(--scene-scale));
 }
 .day-tag {
   position: absolute; z-index: 2; left: calc(18px * var(--scene-scale)); top: calc(18px * var(--scene-scale));
@@ -583,9 +590,9 @@ button:disabled { opacity: .58; filter: grayscale(.35); }
   border: 3px solid #4b3a78; box-shadow: 4px 4px 0 #9b7fd4;
   font: 25px/1 var(--f-mono);
 }
-.escena-oficial.compacta { --scene-scale: .5; height: 270px; }
+.escena-oficial.compacta { --scene-scale: .5; height: calc(var(--paisaje-alto) * var(--scene-scale)); }
 @keyframes paisaje-oficial {
-  to { background-position-x: calc(-3840px * var(--scene-scale)); }
+  to { background-position-x: calc(-1 * var(--paisaje-tira) * var(--scene-scale)); }
 }
 
 .bienvenida .escena-oficial, .elegir-hada .escena-oficial, .selector-materia .escena-oficial { margin: -20px -20px 0; width: calc(100% + 40px); }
@@ -659,7 +666,7 @@ button:disabled { opacity: .58; filter: grayscale(.35); }
   .escena-oficial.compacta { --scene-scale: .5; }
 }
 @media (max-width: 600px) {
-  .escena-oficial, .escena-oficial.compacta { --scene-scale: .5; height: 270px; }
+  .escena-oficial, .escena-oficial.compacta { --scene-scale: .5; height: calc(var(--paisaje-alto) * var(--scene-scale)); }
   .bienvenida .escena-oficial, .elegir-hada .escena-oficial, .selector-materia .escena-oficial { margin: -16px -16px 0; width: calc(100% + 32px); }
   .hadas-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .hada-card { height: 190px; }
@@ -735,11 +742,11 @@ html, body, #root { height: 100%; }
 
 /* escena: tamaño exacto según la escala calculada, centrada en su columna */
 .escena-oficial, .escena-oficial.compacta {
-  height: calc(540px * var(--scene-scale)); width: calc(960px * var(--scene-scale));
+  height: calc(var(--paisaje-alto) * var(--scene-scale)); width: calc(var(--paisaje-ancho) * var(--scene-scale));
   max-width: 100%; margin-inline: auto; border: 3px solid var(--line); box-sizing: content-box;
 }
 .escena-wrap .escena-oficial,
-.bienvenida .escena-oficial, .elegir-hada .escena-oficial, .selector-materia .escena-oficial { width: calc(960px * var(--scene-scale)); margin: 0 auto; }
+.bienvenida .escena-oficial, .elegir-hada .escena-oficial, .selector-materia .escena-oficial { width: calc(var(--paisaje-ancho) * var(--scene-scale)); margin: 0 auto; }
 .escena-wrap { margin: 0; gap: 12px; align-items: stretch; }
 .bocadillo-escena { margin: 0; }
 .day-tag { font-size: calc(25px * max(var(--scene-scale), .7)); min-height: 0; padding: 3px 9px; }

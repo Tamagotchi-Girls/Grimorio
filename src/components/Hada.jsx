@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMovimientoReducido } from "../lib/movimiento.js";
+import { HADA as TAMANO } from "../lib/dimensiones.js";
 
 export const HADAS = [
   { id: "riley", nombre: "Riley", elemento: "tierra", paisaje: "Bosque de cristal" },
@@ -76,8 +77,8 @@ export default function Hada({ nombre = "riley", secuencia = "reposo", className
     <img
       className={`hada-img ${className}`}
       src={ruta(hada, frame, doble)}
-      width={doble ? 640 : 320}
-      height={doble ? 300 : 150}
+      width={TAMANO.ancho * (doble ? 2 : 1)}
+      height={TAMANO.alto * (doble ? 2 : 1)}
       alt={alt}
       aria-hidden={alt ? undefined : true}
       draggable="false"

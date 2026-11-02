@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { crearEnlace } from "../lib/transferencia.js";
+import { TAMANO_QR } from "../lib/dimensiones.js";
 
 export default function Transferencia({ perfil }) {
   const enlace = useMemo(() => crearEnlace(perfil), [perfil]);
   const [qr, setQr] = useState("");
   const [estado, setEstado] = useState("");
   useEffect(() => {
-    QRCode.toDataURL(enlace, { width: 320, margin: 2, color: { dark: "#3d2f66", light: "#fffbea" }, errorCorrectionLevel: "L" })
+    QRCode.toDataURL(enlace, { width: TAMANO_QR, margin: 2, color: { dark: "#3d2f66", light: "#fffbea" }, errorCorrectionLevel: "L" })
       .then(setQr)
       .catch(() => { setQr("error"); setEstado("No se pudo generar el QR. Usa el enlace copiable."); });
   }, [enlace]);

@@ -4,6 +4,7 @@ import { decodificarEnlace } from "../lib/transferencia.js";
 import { guardarProgreso, leerProgreso } from "../lib/progreso.js";
 import { combinarProgreso } from "../lib/validacion.js";
 import { nivelDe } from "../lib/nivel.js";
+import { MATERIAS } from "../data/materias.js";
 import Escena from "../components/Escena.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 
@@ -16,7 +17,7 @@ export default function Importar({ onListo }) {
     <div className="vista"><section className="final px"><h1>Este enlace no es válido</h1><p>Pide un enlace nuevo desde la pantalla Logros.</p></section></div>
   );
   const guardar = (modo) => {
-    ["PE", "FP"].forEach((id) => {
+    MATERIAS.forEach(({ id }) => {
       const entrante = datos.progreso[id];
       guardarProgreso(id, modo === "reemplazar" ? entrante : combinarProgreso(leerProgreso(id), entrante, id));
     });
