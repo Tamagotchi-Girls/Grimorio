@@ -1,0 +1,110 @@
+{
+ "riley": {
+  "titulo": "Bosque de cristal",
+  "tamano_1x": [
+   240,
+   135
+  ],
+  "escala": 4,
+  "fotogramas": 4,
+  "ms_por_fotograma": 320,
+  "hada_pies_1x": [
+   120,
+   122
+  ],
+  "hada_pos_en_4x": [
+   320,
+   344
+  ]
+ },
+ "lyra": {
+  "titulo": "Glaciar de aurora",
+  "tamano_1x": [
+   240,
+   135
+  ],
+  "escala": 4,
+  "fotogramas": 4,
+  "ms_por_fotograma": 320,
+  "hada_pies_1x": [
+   120,
+   122
+  ],
+  "hada_pos_en_4x": [
+   320,
+   344
+  ]
+ },
+ "vega": {
+  "titulo": "Picos de tormenta",
+  "tamano_1x": [
+   240,
+   135
+  ],
+  "escala": 4,
+  "fotogramas": 4,
+  "ms_por_fotograma": 320,
+  "hada_pies_1x": [
+   120,
+   122
+  ],
+  "hada_pos_en_4x": [
+   320,
+   344
+  ]
+ },
+ "aura": {
+  "titulo": "Ruinas del reloj",
+  "tamano_1x": [
+   240,
+   135
+  ],
+  "escala": 4,
+  "fotogramas": 4,
+  "ms_por_fotograma": 320,
+  "hada_pies_1x": [
+   120,
+   122
+  ],
+  "hada_pos_en_4x": [
+   320,
+   344
+  ]
+ },
+ "nova": {
+  "titulo": "Jardín cósmico",
+  "tamano_1x": [
+   240,
+   135
+  ],
+  "escala": 4,
+  "fotogramas": 4,
+  "ms_por_fotograma": 320,
+  "hada_pies_1x": [
+   120,
+   122
+  ],
+  "hada_pos_en_4x": [
+   320,
+   344
+  ]
+ },
+ "onyx": {
+  "titulo": "Bosque de sombras",
+  "tamano_1x": [
+   240,
+   135
+  ],
+  "escala": 4,
+  "fotogramas": 4,
+  "ms_por_fotograma": 320,
+  "hada_pies_1x": [
+   120,
+   122
+  ],
+  "hada_pos_en_4x": [
+   320,
+   344
+  ]
+ }
+}

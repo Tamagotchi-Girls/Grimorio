@@ -1,0 +1,202 @@
+{
+ "personajes": {
+  "riley": {
+   "nombre": "Riley · tierra",
+   "lienzo": [
+    320,
+    150
+   ],
+   "pies_y": 144,
+   "centro_x": 160,
+   "fotogramas": [
+    "reposo",
+    "reposo_b",
+    "poder",
+    "ataque",
+    "especial",
+    "elegido",
+    "dano_a",
+    "dano_b",
+    "apagado"
+   ]
+  },
+  "lyra": {
+   "nombre": "Lyra · hielo",
+   "lienzo": [
+    320,
+    150
+   ],
+   "pies_y": 144,
+   "centro_x": 160,
+   "fotogramas": [
+    "reposo",
+    "reposo_b",
+    "poder",
+    "ataque",
+    "especial",
+    "elegido",
+    "dano_a",
+    "dano_b",
+    "apagado"
+   ]
+  },
+  "vega": {
+   "nombre": "Vega · rayo",
+   "lienzo": [
+    320,
+    150
+   ],
+   "pies_y": 144,
+   "centro_x": 160,
+   "fotogramas": [
+    "reposo",
+    "reposo_b",
+    "poder",
+    "ataque",
+    "especial",
+    "elegido",
+    "dano_a",
+    "dano_b",
+    "apagado"
+   ]
+  },
+  "aura": {
+   "nombre": "Aura · tiempo",
+   "lienzo": [
+    320,
+    150
+   ],
+   "pies_y": 144,
+   "centro_x": 160,
+   "fotogramas": [
+    "reposo",
+    "reposo_b",
+    "poder",
+    "ataque",
+    "especial",
+    "elegido",
+    "dano_a",
+    "dano_b",
+    "apagado"
+   ]
+  },
+  "nova": {
+   "nombre": "Nova · cosmos",
+   "lienzo": [
+    320,
+    150
+   ],
+   "pies_y": 144,
+   "centro_x": 160,
+   "fotogramas": [
+    "reposo",
+    "reposo_b",
+    "poder",
+    "ataque",
+    "especial",
+    "elegido",
+    "dano_a",
+    "dano_b",
+    "apagado"
+   ]
+  },
+  "onyx": {
+   "nombre": "Onyx · sombra",
+   "lienzo": [
+    320,
+    150
+   ],
+   "pies_y": 144,
+   "centro_x": 160,
+   "fotogramas": [
+    "reposo",
+    "reposo_b",
+    "poder",
+    "ataque",
+    "especial",
+    "elegido",
+    "dano_a",
+    "dano_b",
+    "apagado"
+   ]
+  }
+ },
+ "animaciones": {
+  "reposo": [
+   [
+    "reposo",
+    450
+   ],
+   [
+    "reposo_b",
+    450
+   ]
+  ],
+  "seleccion_activa": [
+   [
+    "elegido",
+    600
+   ],
+   [
+    "reposo_b",
+    450
+   ]
+  ],
+  "seleccion_inactiva": [
+   [
+    "apagado",
+    0
+   ]
+  ],
+  "acierto": [
+   [
+    "poder",
+    400
+   ],
+   [
+    "especial",
+    600
+   ],
+   [
+    "reposo",
+    300
+   ]
+  ],
+  "fallo": [
+   [
+    "dano_a",
+    90
+   ],
+   [
+    "dano_b",
+    90
+   ],
+   [
+    "dano_a",
+    90
+   ],
+   [
+    "dano_b",
+    90
+   ],
+   [
+    "reposo",
+    300
+   ]
+  ],
+  "subir_nivel_o_simulacro": [
+   [
+    "ataque",
+    500
+   ],
+   [
+    "especial",
+    700
+   ],
+   [
+    "reposo",
+    300
+   ]
+  ]
+ }
+}

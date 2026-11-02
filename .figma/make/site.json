@@ -1,0 +1,15 @@
+{
+  "title": "Grimorio Departamental",
+  "description": "Guía de estudio interactiva para alumnos de Ingeniería en Computación, con repasos, simulacros y seguimiento del progreso en dos materias de programación.",
+  "language": "es",
+  "icons": {
+    "icon": "/favicon.png"
+  },
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
