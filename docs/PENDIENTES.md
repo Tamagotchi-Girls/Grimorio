@@ -15,3 +15,14 @@ comprobar que quedó resuelto. Al terminar un pendiente, bórralo de aquí en el
 - **Cómo comprobarlo:** una prueba e2e que cambie el hash a `#/importar?d=…` sin recargar y vea la pantalla
   de importación. En `tests/e2e/e2e.mjs`, `abrirEnlace` hace `reload()` justamente por este problema; al
   arreglarlo se puede quitar ese rodeo.
+
+## Después de la fase 6 (accesibilidad)
+
+### Los diálogos de confirmación no atrapan el foco ni cierran con Escape
+
+- **Qué pasa hoy:** `Confirmar` (`src/components/Confirmar.jsx`) tiene `role="alertdialog"` en los de importar y
+  simulacro, pero al abrirse no mueve el foco al cuadro, el foco puede salir con Tab y Escape no lo cierra. El de
+  "borrar progreso" ni siquiera lleva rol. Se dejó así en la fase 6 porque cambia el comportamiento.
+- **Qué hacer:** al abrir, enfocar el botón seguro (Cancelar); atrapar Tab dentro; Escape cancela; al cerrar,
+  devolver el foco al botón que lo abrió. Decidir si "borrar progreso" también es `alertdialog`.
+- **Cómo comprobarlo:** ampliar las pruebas F de `tests/e2e/e2e.mjs` (F4 hoy fija el orden Cancelar → Confirmar).

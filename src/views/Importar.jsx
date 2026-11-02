@@ -5,8 +5,8 @@ import { guardarProgreso, leerProgreso } from "../lib/progreso.js";
 import { combinarProgreso } from "../lib/validacion.js";
 import { nivelDe } from "../lib/nivel.js";
 import { MATERIAS } from "../data/materias.js";
-import Escena from "../components/Escena.jsx";
-import Bocadillo from "../components/Bocadillo.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
+import Confirmar from "../components/Confirmar.jsx";
 
 const nivel = (d) => nivelDe(d?.xp);
 
@@ -25,20 +25,22 @@ export default function Importar({ onListo }) {
   };
   return (
     <div className="vista importar">
-      <div className="escena-wrap">
-        <Escena hada={datos.perfil.avatar} />
-      <Bocadillo className="bocadillo-escena" texto={`Encontré el grimorio de ${datos.perfil.nombre}. PE nivel ${nivel(datos.progreso.PE)} y FP nivel ${nivel(datos.progreso.FP)}. ¿Cómo quieres importarlo?`} />
-      </div>
+      <ZonaEscena hada={datos.perfil.avatar} dialogo={`Encontré el grimorio de ${datos.perfil.nombre}. PE nivel ${nivel(datos.progreso.PE)} y FP nivel ${nivel(datos.progreso.FP)}. ¿Cómo quieres importarlo?`} />
       <section className="preview-perfil px">
         <HadaRetrato hada={datos.perfil.avatar} />
         <div><span className="stat-k">Perfil encontrado</span><h2>{datos.perfil.nombre}</h2><p>PE · Nivel {nivel(datos.progreso.PE)} &nbsp; FP · Nivel {nivel(datos.progreso.FP)}</p></div>
       </section>
       <button className="btn grande mint px" onClick={() => guardar("combinar")}>Combinar con lo de aquí</button>
       {!confirmar ? <button className="btn-texto" onClick={() => setConfirmar(true)}>Reemplazar mi progreso actual</button> : (
-        <div className="confirmar px" role="alertdialog" aria-label="Confirmar reemplazo">
+        <Confirmar
+          etiqueta="Confirmar reemplazo"
+          textoCancelar="Cancelar"
+          onCancelar={() => setConfirmar(false)}
+          textoConfirmar="Sí, reemplazar"
+          onConfirmar={() => guardar("reemplazar")}
+        >
           <p><strong>Advertencia:</strong> se borrará el progreso que ya existe en este dispositivo.</p>
-          <div className="acciones"><button className="btn px" onClick={() => setConfirmar(false)}>Cancelar</button><button className="btn px pink" onClick={() => guardar("reemplazar")}>Sí, reemplazar</button></div>
-        </div>
+        </Confirmar>
       )}
     </div>
   );

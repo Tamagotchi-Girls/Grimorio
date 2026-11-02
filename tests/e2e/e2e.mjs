@@ -248,6 +248,95 @@ async function correr() {
     await ctx.close();
   });
 
+  // F. diálogos de confirmación: abrir, cancelar y confirmar, con ratón y solo con teclado.
+  // Hoy el foco no se atrapa ni Escape cierra (pendiente de accesibilidad): se prueba lo que sí hace.
+  // `activar` pone el foco en el botón y lo acciona con el teclado.
+  const activar = async (p, boton, tecla = "Enter") => { await boton.focus(); await p.keyboard.press(tecla); await p.waitForTimeout(150); };
+  const nuevaPagina = async (almacen) => {
+    const ctx = await contexto(); const p = await ctx.newPage(); const errs = conErrores(p);
+    await p.goto(URL_APP); await sembrar(p, almacen); await p.reload(); await p.waitForLoadState("networkidle"); await p.waitForTimeout(300);
+    return { ctx, p, errs };
+  };
+  const SEMBRADO = { "grimorio-perfil-v1": { nombre: "Dani", avatar: "lyra" }, "grimorio-materia-activa": "PE", "guia-pe-progreso-v1": PE, "guia-fp-progreso-v1": FP };
+
+  for (const modo of ["ratón", "teclado"]) {
+    const pulsar = async (p, b, tecla) => (modo === "ratón" ? b.click() : activar(p, b, tecla));
+
+    await paso(`F1 borrar progreso (${modo}): abre, cancela y confirma`, async () => {
+      const { ctx, p, errs } = await nuevaPagina(SEMBRADO);
+      await ir(p, "/progreso");
+      const abrir = p.getByRole("button", { name: "Borrar progreso de PE" });
+      const caja = p.locator(".confirmar");
+      assert.equal(await caja.count(), 0);
+      await pulsar(p, abrir, "Enter");
+      assert.equal(await caja.count(), 1);
+      assert.equal(await caja.getAttribute("role"), null); // este cuadro no es alertdialog
+      assert.match(await caja.innerText(), /No se puede deshacer/);
+      await pulsar(p, caja.getByRole("button", { name: "Cancelar" }), "Space");
+      assert.equal(await caja.count(), 0);
+      assert.deepEqual(await leerAlmacen(p, "guia-pe-progreso-v1"), PE); // cancelar no toca nada
+      await pulsar(p, abrir, "Space");
+      await pulsar(p, p.locator(".confirmar").getByRole("button", { name: "Sí, borrar" }), "Enter");
+      assert.equal(await p.locator(".confirmar").count(), 0);
+      assert.equal((await leerAlmacen(p, "guia-pe-progreso-v1")).xp, 0);
+      assert.deepEqual(await leerAlmacen(p, "guia-fp-progreso-v1"), FP); // la otra materia se queda
+      assert.deepEqual(errs, []);
+      await ctx.close();
+    });
+
+    await paso(`F2 reemplazar al importar (${modo}): abre, cancela y confirma`, async () => {
+      const { ctx, p, errs } = await nuevaPagina({ ...SEMBRADO, "guia-pe-progreso-v1": { xp: 999, preguntas: {}, simulacros: [], diasEstudio: [] } });
+      await abrirEnlace(p, enlace);
+      const abrir = p.getByRole("button", { name: "Reemplazar mi progreso actual" });
+      const dialogo = p.getByRole("alertdialog", { name: "Confirmar reemplazo" });
+      assert.equal(await dialogo.count(), 0);
+      await pulsar(p, abrir, "Enter");
+      assert.equal(await dialogo.count(), 1);
+      assert.match(await dialogo.innerText(), /se borrará el progreso/);
+      await pulsar(p, dialogo.getByRole("button", { name: "Cancelar" }), "Enter");
+      assert.equal(await dialogo.count(), 0);
+      assert.equal((await leerAlmacen(p, "guia-pe-progreso-v1")).xp, 999); // cancelar no toca nada
+      await pulsar(p, abrir, "Space");
+      await pulsar(p, dialogo.getByRole("button", { name: "Sí, reemplazar" }), "Space");
+      await p.waitForTimeout(300);
+      assert.deepEqual(await leerAlmacen(p, "guia-pe-progreso-v1"), progresoParaEnlace);
+      assert.deepEqual(errs, []);
+      await ctx.close();
+    });
+
+    await paso(`F3 terminar simulacro (${modo}): abre, sigue revisando y termina`, async () => {
+      const { ctx, p, errs } = await nuevaPagina(SEMBRADO);
+      await ir(p, "/simulacro");
+      await pulsar(p, p.getByRole("button", { name: "Empezar simulacro" }), "Enter");
+      const abrir = p.getByRole("button", { name: "Terminar simulacro" });
+      const dialogo = p.getByRole("alertdialog", { name: "Confirmar" });
+      assert.equal(await dialogo.count(), 0);
+      await pulsar(p, abrir, "Enter");
+      assert.equal(await dialogo.count(), 1);
+      assert.match(await dialogo.innerText(), /sin responder/);
+      assert.ok(await dialogo.locator(".acciones.centro").count());
+      await pulsar(p, dialogo.getByRole("button", { name: "Seguir revisando" }), "Enter");
+      assert.equal(await dialogo.count(), 0);
+      assert.equal((await leerAlmacen(p, "guia-pe-progreso-v1")).simulacros.length, PE.simulacros.length);
+      await pulsar(p, abrir, "Space");
+      await pulsar(p, dialogo.getByRole("button", { name: "Terminar", exact: true }), "Enter");
+      assert.equal((await leerAlmacen(p, "guia-pe-progreso-v1")).simulacros.length, PE.simulacros.length + 1);
+      assert.equal(await dialogo.count(), 0);
+      assert.deepEqual(errs, []);
+      await ctx.close();
+    });
+  }
+
+  await paso("F4 el orden de Tab dentro del diálogo es Cancelar → Confirmar", async () => {
+    const { ctx, p } = await nuevaPagina(SEMBRADO);
+    await ir(p, "/progreso");
+    await p.getByRole("button", { name: "Borrar progreso de PE" }).click();
+    await p.locator(".confirmar").getByRole("button", { name: "Cancelar" }).focus();
+    await p.keyboard.press("Tab");
+    assert.equal(await p.evaluate(() => document.activeElement.textContent), "Sí, borrar");
+    await ctx.close();
+  });
+
   await paso("A5 la página principal no produjo errores de JavaScript", async () => assert.deepEqual(erroresA, []));
 }
 

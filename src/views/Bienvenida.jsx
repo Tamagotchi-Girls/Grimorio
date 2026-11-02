@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Bocadillo from "../components/Bocadillo.jsx";
-import Escena from "../components/Escena.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
 import ElegirHada from "./ElegirHada.jsx";
 
 export default function Bienvenida({ onContinuar }) {
@@ -15,10 +14,7 @@ export default function Bienvenida({ onContinuar }) {
 
   if (paso === "nombre") return (
     <div className="vista bienvenida">
-      <div className="escena-wrap">
-        <Escena hada="riley" />
-      <Bocadillo className="bocadillo-escena" texto="¡Hola! Antes de abrir el grimorio… ¿Cómo te llamas?" />
-      </div>
+      <ZonaEscena hada="riley" dialogo="¡Hola! Antes de abrir el grimorio… ¿Cómo te llamas?" />
       <form className="perfil-form onboarding-form" onSubmit={siguiente}>
         <label className="campo">
           <span>¿Cómo te llamas?</span>

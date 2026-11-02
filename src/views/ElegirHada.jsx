@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Bocadillo from "../components/Bocadillo.jsx";
-import Escena from "../components/Escena.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
 import Hada, { HADAS, normalizarHada } from "../components/Hada.jsx";
 
 // Pantalla "Elige tu hada": se usa en la bienvenida y cada vez que el alumno quiere cambiar de hada.
@@ -16,10 +15,7 @@ export default function ElegirHada({ inicial = "riley", onElegir, onVolver, text
 
   return (
     <div className="vista elegir-hada">
-      <div className="escena-wrap">
-        <Escena hada={hada} secuencia="seleccion_activa" />
-      <Bocadillo className="bocadillo-escena" texto={`Soy ${elegida.nombre}, hada de ${elegida.elemento}. Mi hogar es el ${elegida.paisaje}. ¿Estudiamos juntas?`} />
-      </div>
+      <ZonaEscena hada={hada} secuencia="seleccion_activa" dialogo={`Soy ${elegida.nombre}, hada de ${elegida.elemento}. Mi hogar es el ${elegida.paisaje}. ¿Estudiamos juntas?`} />
       <form onSubmit={enviar}>
         <fieldset className="hada-fieldset">
           <legend>Elige tu hada compañera</legend>

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Bocadillo from "../components/Bocadillo.jsx";
-import Escena from "../components/Escena.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
 import { MATERIAS } from "../data/materias.js";
 import { resumenMateria } from "../lib/progreso.js";
 import { dosDigitos } from "../lib/formato.js";
@@ -15,10 +14,7 @@ export default function Materias({ perfil, onElegir }) {
   };
   return (
     <div className="vista selector-materia">
-      <div className="escena-wrap">
-        <Escena hada={perfil.avatar} />
-      <Bocadillo className="bocadillo-escena" texto={`Hola, ${perfil.nombre}. ¿Para qué departamental vas a estudiar?`} />
-      </div>
+      <ZonaEscena hada={perfil.avatar} dialogo={`Hola, ${perfil.nombre}. ¿Para qué departamental vas a estudiar?`} />
       <fieldset className="menu-materias" onKeyDown={mover}>
         <legend className="sr">Selecciona una materia</legend>
         {MATERIAS.map((m) => {
