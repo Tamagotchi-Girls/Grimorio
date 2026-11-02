@@ -1,28 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
-import LZString from "lz-string";
-
-function datosTransferencia(perfil) {
-  const leer = (k) => {
-    try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch { return {}; }
-  };
-  return { version: 1, perfil, progreso: { PE: leer("guia-pe-progreso-v1"), FP: leer("guia-fp-progreso-v1") } };
-}
-
-export function crearEnlace(perfil) {
-  const raw = JSON.stringify(datosTransferencia(perfil));
-  const encoded = LZString.compressToEncodedURIComponent(raw);
-  return `${location.origin}${location.pathname}#/importar?d=${encodeURIComponent(encoded)}`;
-}
-
-export function decodificarEnlace() {
-  try {
-    const query = location.hash.split("?")[1] || "";
-    const d = new URLSearchParams(query).get("d");
-    const raw = d ? LZString.decompressFromEncodedURIComponent(d) : null;
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
+import { crearEnlace } from "../lib/transferencia.js";
 
 export default function Transferencia({ perfil }) {
   const enlace = useMemo(() => crearEnlace(perfil), [perfil]);

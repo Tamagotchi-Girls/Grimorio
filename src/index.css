@@ -816,3 +816,12 @@ html, body, #root { height: 100%; }
   .materia-status { min-width: 40px; }
   .tema-btn { margin-left: 2px; }
 }
+
+/* Aviso de que no se pudo guardar (localStorage lleno o modo privado) */
+.aviso-guardado { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 60; width: min(92vw, 560px); }
+.aviso-guardado > div {
+  display: flex; align-items: center; gap: 10px; padding: 6px 10px; margin: var(--b);
+  background: var(--gold); color: #3d2f66;
+}
+.aviso-guardado p { margin: 0; flex: 1; font-family: var(--f-body); font-size: 16px; line-height: 1.25; }
+.aviso-guardado .btn { flex: none; padding: 4px 10px; font-size: 14px; }

@@ -2,10 +2,11 @@ import { useState } from "react";
 import Bocadillo from "../components/Bocadillo.jsx";
 import Escena from "../components/Escena.jsx";
 import { CONTENIDO } from "../data/contenido.js";
+import { leerProgreso } from "../lib/progreso.js";
 
 const leer = (id) => {
   try {
-    const datos = JSON.parse(localStorage.getItem(id === "PE" ? "guia-pe-progreso-v1" : "guia-fp-progreso-v1") || "{}");
+    const datos = leerProgreso(id);
     const xp = datos.xp || 0;
     const preguntas = CONTENIDO[id].PREGUNTAS;
     const dominadas = preguntas.filter((p) => datos.preguntas?.[p.id]?.ultimo).length;

@@ -14,12 +14,11 @@ import { useProgreso } from "./lib/progreso.js";
 import { PREGUNTAS, usarMateria } from "./data/contenido.js";
 import Bocadillo from "./components/Bocadillo.jsx";
 import Hada from "./components/Hada.jsx";
+import AvisoAlmacenamiento from "./components/AvisoAlmacenamiento.jsx";
+import { CLAVES, escribirJSON, escribirTexto, leerJSON, leerTexto, quitar } from "./lib/almacenamiento.js";
 
-const PERFIL = "grimorio-perfil-v1";
-const ACTIVA = "grimorio-materia-activa";
-const leer = (k, fallback = null) => { try { return JSON.parse(localStorage.getItem(k)) || fallback; } catch { return fallback; } };
 const leerRuta = () => location.hash.replace(/^#\/?/, "").split("?")[0] || "";
-const temaInicial = () => localStorage.getItem("guia-pe-tema") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+const temaInicial = () => leerTexto(CLAVES.tema) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 
 function Aplicacion({ perfil, setPerfil, materia, setMateria }) {
   usarMateria(materia);
@@ -45,9 +44,9 @@ function Aplicacion({ perfil, setPerfil, materia, setMateria }) {
   }, [prog.nivel]);
   const ir = (r) => { location.hash = r ? `/${r}` : "/"; };
   const cambiarTema = () => {
-    const t = tema === "dark" ? "light" : "dark"; setTema(t); localStorage.setItem("guia-pe-tema", t);
+    const t = tema === "dark" ? "light" : "dark"; setTema(t); escribirTexto(CLAVES.tema, t);
   };
-  const cambiarMateria = () => { setMateria(null); localStorage.removeItem(ACTIVA); location.hash = "/materias"; };
+  const cambiarMateria = () => { setMateria(null); quitar(CLAVES.materiaActiva); location.hash = "/materias"; };
   const [base, param] = ruta.split("/");
   let vista;
   if (base === "temas") vista = <Temas prog={prog} ir={ir} perfil={perfil} />;
@@ -78,23 +77,24 @@ function Aplicacion({ perfil, setPerfil, materia, setMateria }) {
 }
 
 export default function App() {
-  const [perfil, setPerfilState] = useState(() => leer(PERFIL));
-  const [materia, setMateriaState] = useState(() => localStorage.getItem(ACTIVA));
-  const [seleccionando, setSeleccionando] = useState(() => !localStorage.getItem(ACTIVA));
+  const [perfil, setPerfilState] = useState(() => leerJSON(CLAVES.perfil));
+  const [materia, setMateriaState] = useState(() => leerTexto(CLAVES.materiaActiva));
+  const [seleccionando, setSeleccionando] = useState(() => !leerTexto(CLAVES.materiaActiva));
   const [temaPrevio, setTemaPrevio] = useState(temaInicial);
   const importar = leerRuta() === "importar";
   useEffect(() => document.documentElement.setAttribute("data-theme", temaPrevio), [temaPrevio]);
-  const setPerfil = (p) => { setPerfilState(p); localStorage.setItem(PERFIL, JSON.stringify(p)); };
-  const elegir = (m) => { setMateriaState(m); setSeleccionando(false); localStorage.setItem(ACTIVA, m); location.hash = "/"; };
+  const setPerfil = (p) => { setPerfilState(p); escribirJSON(CLAVES.perfil, p); };
+  const elegir = (m) => { setMateriaState(m); setSeleccionando(false); escribirTexto(CLAVES.materiaActiva, m); location.hash = "/"; };
   const abrirSelector = () => { setMateriaState(null); setSeleccionando(true); };
   const previo = importar || !perfil || seleccionando || !materia;
   const cambiarTemaPrevio = () => {
     const siguiente = temaPrevio === "dark" ? "light" : "dark";
     setTemaPrevio(siguiente);
-    localStorage.setItem("guia-pe-tema", siguiente);
+    escribirTexto(CLAVES.tema, siguiente);
   };
   return (
     <div className="mesa">
+      <AvisoAlmacenamiento />
       <div className="aparato">
         {previo && <BarraEstado nivel={1} dominadas={0} total={PREGUNTAS.length} tema={temaPrevio} onTema={cambiarTemaPrevio} materia={materia || "PE"} onMateria={() => {}} />}
         {importar ? <main className="pantalla"><Importar onListo={(p) => { setPerfil(p); abrirSelector(); location.hash = "/materias"; }} /></main>

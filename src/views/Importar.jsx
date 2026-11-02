@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import HadaRetrato from "../components/HadaRetrato.jsx";
-import { decodificarEnlace } from "../components/Transferencia.jsx";
+import { decodificarEnlace } from "../lib/transferencia.js";
+import { guardarProgreso, leerProgreso } from "../lib/progreso.js";
 import Escena from "../components/Escena.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 
@@ -14,18 +15,16 @@ export default function Importar({ onListo }) {
   );
   const guardar = (modo) => {
     ["PE", "FP"].forEach((id) => {
-      const clave = id === "PE" ? "guia-pe-progreso-v1" : "guia-fp-progreso-v1";
       const entrante = datos.progreso[id] || {};
-      if (modo === "reemplazar") localStorage.setItem(clave, JSON.stringify(entrante));
+      if (modo === "reemplazar") guardarProgreso(id, entrante);
       else {
-        let local = {}; try { local = JSON.parse(localStorage.getItem(clave) || "{}"); } catch {}
-        const preguntas = { ...(local.preguntas || {}), ...(entrante.preguntas || {}) };
-        const simulacros = [...(local.simulacros || []), ...(entrante.simulacros || [])].slice(-10);
-        const diasEstudio = [...new Set([...(local.diasEstudio || []), ...(entrante.diasEstudio || [])])].slice(-90);
-        localStorage.setItem(clave, JSON.stringify({ xp: Math.max(local.xp || 0, entrante.xp || 0), preguntas, simulacros, diasEstudio }));
+        const local = leerProgreso(id);
+        const preguntas = { ...local.preguntas, ...entrante.preguntas };
+        const simulacros = [...local.simulacros, ...(entrante.simulacros || [])].slice(-10);
+        const diasEstudio = [...new Set([...local.diasEstudio, ...(entrante.diasEstudio || [])])].slice(-90);
+        guardarProgreso(id, { xp: Math.max(local.xp || 0, entrante.xp || 0), preguntas, simulacros, diasEstudio });
       }
     });
-    localStorage.setItem("grimorio-perfil-v1", JSON.stringify(datos.perfil));
     onListo(datos.perfil);
   };
   return (

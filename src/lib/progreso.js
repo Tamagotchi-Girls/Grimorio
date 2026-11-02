@@ -1,31 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
 import { PREGUNTAS } from "../data/contenido.js";
+import { claveProgreso, escribirJSON, leerJSON } from "./almacenamiento.js";
 
 const VACIO = { xp: 0, preguntas: {}, simulacros: [], diasEstudio: [] };
 const hoy = () => new Date().toISOString().slice(0, 10);
 const conDia = (dias = []) => [...new Set([...dias, hoy()])].slice(-90);
 
-function cargar(clave) {
-  try {
-    const raw = localStorage.getItem(clave);
-    if (!raw) return VACIO;
-    const d = JSON.parse(raw);
-    return { ...VACIO, ...d };
-  } catch {
-    return VACIO;
-  }
+export function leerProgreso(materia) {
+  const d = leerJSON(claveProgreso(materia));
+  return d ? { ...VACIO, ...d } : VACIO;
 }
+
+export const guardarProgreso = (materia, datos) => escribirJSON(claveProgreso(materia), datos);
 
 export const XP_POR_ACIERTO = 10;
 export const XP_POR_NIVEL = 100;
 
 export function useProgreso(materia = "PE") {
-  const clave = materia === "FP" ? "guia-fp-progreso-v1" : "guia-pe-progreso-v1";
-  const [datos, setDatos] = useState(() => cargar(clave));
+  const [datos, setDatos] = useState(() => leerProgreso(materia));
 
-  useEffect(() => {
-    try { localStorage.setItem(clave, JSON.stringify(datos)); } catch { /* sin almacenamiento */ }
-  }, [datos, clave]);
+  useEffect(() => { guardarProgreso(materia, datos); }, [datos, materia]);
 
   const registrar = useCallback((id, acierto) => {
     setDatos(d => {
