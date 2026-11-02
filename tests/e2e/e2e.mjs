@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { PREGUNTAS as PREGUNTAS_PE } from "../../src/data/preguntas.js";
 import { PREGUNTAS as PREGUNTAS_FP } from "../../src/data/fp/preguntas.js";
+import { CONTENIDO } from "../../src/data/contenido.js";
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const args = process.argv.slice(2);
@@ -484,6 +485,73 @@ async function correr() {
     assert.equal(await materiaBarra(otra.p), "PE");
     assert.equal(await otra.p.locator("main#contenido").count(), 1);
     await otra.ctx.close();
+  });
+
+  // H. contenido por materia: cambiar PE ↔ FP sin recargar nunca mezcla contenido ni progreso
+  await paso("H cambiar PE ↔ FP varias veces seguidas: Inicio, Temas, Tema, simulacro y Logros siempre de la materia correcta", async () => {
+    const { ctx, p, errs } = await nuevaPagina(SEMBRADO);
+    await p.evaluate(() => { window.__sinRecarga = true; });
+    const dominadasDe = (ids) => ids.filter((_, i) => i % 2 === 0).length; // `mapa` marca `ultimo` en los pares
+    const esperado = {
+      PE: { ids: idsPE, dominadas: dominadasDe(idsPE.slice(0, 30)), xp: PE.xp, nivel: "LV. 03" },
+      FP: { ids: idsFP, dominadas: dominadasDe(idsFP.slice(0, 12)), xp: FP.xp, nivel: "LV. 01" },
+    };
+    for (const m of ["PE", "FP"]) esperado[m] = { ...esperado[m], ...CONTENIDO[m] };
+    assert.notEqual(esperado.PE.TEMAS[0].nombre, esperado.FP.TEMAS[0].nombre); // si no, la prueba no distingue
+    const enOtra = (m) => (m === "PE" ? "FP" : "PE");
+
+    const revisar = async (m) => {
+      const e = esperado[m];
+      const mia = new Set(e.PREGUNTAS.map((q) => q.id)), otra = esperado[enOtra(m)].TEMAS;
+      assert.equal(await materiaBarra(p), m);
+      assert.equal(await lv(p), e.nivel);
+      // Inicio: conteos y progreso
+      await ir(p, "/");
+      const inicio = await texto(p);
+      assert.match(inicio, new RegExp(`${e.dominadas}\\s*/\\s*${e.PREGUNTAS.length}`), `Inicio ${m}: dominados`);
+      assert.match(inicio, new RegExp(`${e.PREGUNTAS.length} reactivos de los ${e.TEMAS.length} temas`));
+      // Temas: los nombres de la materia y de ninguna otra
+      await ir(p, "/temas");
+      const temas = (await texto(p)).toLowerCase();
+      for (const t of e.TEMAS) assert.ok(temas.includes(t.nombre.toLowerCase()), `Temas ${m}: falta "${t.nombre}"`);
+      for (const t of otra) assert.ok(!temas.includes(t.nombre.toLowerCase()), `Temas ${m}: aparece "${t.nombre}" de la otra materia`);
+      // Un tema: su título y reactivos de la materia
+      await ir(p, "/tema/2");
+      assert.equal((await p.locator("h1").first().innerText()).toLowerCase(), e.TEMAS.find((t) => t.id === 2).nombre.toLowerCase());
+      await p.getByRole("tab", { name: "Practicar" }).click();
+      const enunciado = await p.locator("h2.pregunta").textContent();
+      const q = e.PREGUNTAS.find((x) => x.pregunta === enunciado);
+      assert.ok(q && q.tema === 2 && mia.has(q.id), `Tema ${m}: reactivo ajeno "${enunciado}"`);
+      // Simulacro: los 20 reactivos son de la materia
+      await ir(p, "/simulacro");
+      await p.getByRole("button", { name: "Empezar simulacro" }).click();
+      for (let k = 0; k < 20; k++) {
+        const t = await p.locator("h2.pregunta").textContent();
+        assert.ok(e.PREGUNTAS.some((x) => x.pregunta === t), `Simulacro ${m}: reactivo ajeno "${t}"`);
+        if (k < 19) await p.keyboard.press("ArrowRight");
+      }
+      // Logros: XP, filas por tema y nivel de esta materia
+      await ir(p, "/progreso");
+      const prog = await texto(p);
+      assert.match(prog, new RegExp(`${e.xp} XP en total`), `Logros ${m}: XP`);
+      const filas = await p.locator(".barra-tema .bt-nombre").allInnerTexts();
+      assert.deepEqual(filas.map((f) => f.toLowerCase()), e.TEMAS.map((t) => `${t.id}. ${t.corto}`.toLowerCase()));
+      assert.match(prog, /Borrar progreso de/i);
+      assert.ok(prog.includes(`Borrar progreso de ${m}`));
+    };
+
+    await revisar("PE");
+    for (const destino of ["FP", "PE", "FP", "PE"]) {
+      await p.locator(".estado .materia-status").click();
+      await p.getByRole("radio").nth(destino === "PE" ? 0 : 1).check({ force: true });
+      await p.getByRole("button", { name: /ENTRAR/ }).click(); await p.waitForTimeout(400);
+      await revisar(destino);
+    }
+    assert.equal(await p.evaluate(() => window.__sinRecarga), true); // todo sin recargar
+    assert.deepEqual(await leerAlmacen(p, "guia-pe-progreso-v1"), PE); // y sin tocar el progreso guardado
+    assert.deepEqual(await leerAlmacen(p, "guia-fp-progreso-v1"), FP);
+    assert.deepEqual(errs, []);
+    await ctx.close();
   });
 
   await paso("A5 la página principal no produjo errores de JavaScript", async () => assert.deepEqual(erroresA, []));

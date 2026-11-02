@@ -15,6 +15,19 @@ fecha y el commit que lo resolvió.
   devolver el foco al botón que lo abrió. Decidir si "borrar progreso" también es `alertdialog`.
 - **Cómo comprobarlo:** ampliar las pruebas F de `tests/e2e/e2e.mjs` (F4 hoy fija el orden Cancelar → Confirmar).
 
+## Después de la fase 8
+
+### Cargar el contenido de cada materia con `import()` dinámico (A7)
+
+- **Qué pasa hoy:** `src/data/contenido.js` importa de forma estática los temas y reactivos de PE y FP, así que el
+  paquete inicial lleva las dos materias aunque solo se estudie una.
+- **Por qué no se hizo en la fase 8:** `ContenidoProvider` entrega el contenido de forma síncrona y `CONTENIDO` lo
+  importan `validacion.js`, `resumenMateria` y los selectores de materia. Cargar bajo demanda obliga a un estado de
+  "cargando" en el proveedor y a que esas funciones reciban el contenido como parámetro.
+- **Qué hacer:** que `ContenidoProvider` cargue la materia con `import()` (con una pantalla de carga mínima) y que
+  `validacion.js`/`resumenMateria` dejen de leer `CONTENIDO`.
+- **Cómo comprobarlo:** `pnpm build` debe generar un fragmento aparte por materia y las pruebas H del e2e deben seguir pasando.
+
 ## Hecho
 
 ### `#/importar?d=…` también funciona si se cambia el hash sin recargar
