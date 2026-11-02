@@ -52,9 +52,8 @@ const sembrar = (page, almacen) => page.evaluate((a) => { for (const [k, v] of O
 const leerAlmacen = (page, k) => page.evaluate((k) => { const v = localStorage.getItem(k); try { return JSON.parse(v); } catch { return v; } }, k);
 const texto = (page) => page.locator("body").innerText();
 const ir = async (page, hash) => { await page.goto(`${URL_APP}/#${hash}`); await page.waitForLoadState("networkidle"); await page.waitForTimeout(400); };
-// Abrir un enlace de importación como lo haría el usuario: pestaña nueva (carga completa). `goto` con otro
-// hash en la misma página no recarga, y la ruta de importación se lee al cargar.
-const abrirEnlace = async (page, enlace) => { await page.goto(enlace); await page.reload(); await page.waitForLoadState("networkidle"); await page.waitForTimeout(400); };
+// Abrir un enlace de importación. Funciona igual en una pestaña nueva que cambiando el hash sin recargar.
+const abrirEnlace = async (page, enlace) => { await page.goto(enlace); await page.waitForLoadState("networkidle"); await page.waitForTimeout(400); };
 const conErrores = (page) => { const errs = []; page.on("pageerror", (e) => errs.push(e.message)); return errs; };
 const ALMACEN_LLENO = () => {
   if (!localStorage.getItem("sembrado")) {
@@ -335,6 +334,156 @@ async function correr() {
     await p.keyboard.press("Tab");
     assert.equal(await p.evaluate(() => document.activeElement.textContent), "Sí, borrar");
     await ctx.close();
+  });
+
+  // G. marco de la app: flujo, ruta, tema, barra y LEVEL UP
+  const lv = (p) => p.locator(".estado .lv").innerText();
+  const materiaBarra = (p) => p.locator(".estado .materia-status").innerText();
+  const SINPROGRESO = { "grimorio-perfil-v1": { nombre: "Dani", avatar: "lyra" } };
+  const hashEnlace = enlace.slice(enlace.indexOf("#"));
+
+  await paso("G1 flujo completo desde cero: bienvenida → hada → materia → inicio", async () => {
+    const ctx = await contexto(); const p = await ctx.newPage(); const errs = conErrores(p);
+    await p.goto(URL_APP); await p.waitForLoadState("networkidle"); await p.waitForTimeout(400);
+    assert.match(await texto(p), /Cómo te llamas/);
+    assert.equal(await p.locator("nav.nav button:not([disabled])").count(), 0); // navegación bloqueada
+    assert.equal(await lv(p), "LV. 01");
+    await p.getByRole("textbox").fill("Luna");
+    await p.getByRole("button", { name: /SIGUIENTE/ }).click();
+    assert.match(await texto(p), /Elige tu hada/i);
+    await p.getByRole("radio").nth(3).check({ force: true });
+    await p.getByRole("button", { name: /COMENZAR/ }).click();
+    assert.match(await texto(p), /Hola, Luna/);
+    assert.deepEqual(await leerAlmacen(p, "grimorio-perfil-v1"), { nombre: "Luna", avatar: "aura" });
+    await p.getByRole("button", { name: /ENTRAR/ }).click();
+    await p.waitForTimeout(400);
+    assert.equal(await leerAlmacen(p, "grimorio-materia-activa"), "PE");
+    assert.equal(await p.locator("nav.nav button:not([disabled])").count(), 4); // ya se puede navegar
+    assert.equal(await p.locator("main#contenido").count(), 1);
+    assert.equal(await materiaBarra(p), "PE");
+    assert.equal(await p.locator(".estado").count(), 1);
+    assert.equal(await p.locator("footer.pie").count(), 1);
+    assert.deepEqual(errs, []);
+    await ctx.close();
+  });
+
+  await paso("G2 cambiar de materia y volver conserva el progreso de cada una", async () => {
+    const { ctx, p, errs } = await nuevaPagina(SEMBRADO);
+    assert.equal(await materiaBarra(p), "PE"); assert.equal(await lv(p), "LV. 03");
+    await p.locator(".cambiar-materia").click();
+    await p.getByRole("radio").first().waitFor(); assert.match(await texto(p), /Selecciona una materia|ENTRAR/);
+    assert.equal(await leerAlmacen(p, "grimorio-materia-activa"), null);
+    await p.getByRole("radio").nth(1).check({ force: true });
+    await p.getByRole("button", { name: /ENTRAR/ }).click(); await p.waitForTimeout(400);
+    assert.equal(await materiaBarra(p), "FP"); assert.equal(await lv(p), "LV. 01");
+    assert.equal(await leerAlmacen(p, "grimorio-materia-activa"), "FP");
+    await p.locator(".estado .materia-status").click(); // también desde la barra
+    await p.getByRole("radio").first().waitFor(); assert.match(await texto(p), /Selecciona una materia|ENTRAR/);
+    await p.getByRole("radio").nth(0).check({ force: true });
+    await p.getByRole("button", { name: /ENTRAR/ }).click(); await p.waitForTimeout(400);
+    assert.equal(await materiaBarra(p), "PE"); assert.equal(await lv(p), "LV. 03");
+    assert.deepEqual(await leerAlmacen(p, "guia-pe-progreso-v1"), PE);
+    assert.deepEqual(await leerAlmacen(p, "guia-fp-progreso-v1"), FP);
+    assert.deepEqual(errs, []);
+    await ctx.close();
+  });
+
+  await paso("G3 el botón atrás del navegador recorre las pantallas de la app", async () => {
+    const { ctx, p } = await nuevaPagina(SEMBRADO);
+    const activo = async () => (await p.locator(".nav-btn[aria-current=page]").innerText()).trim();
+    assert.equal(await activo(), "INICIO");
+    await p.getByRole("button", { name: "REPASO" }).click(); await p.waitForTimeout(200);
+    await p.getByRole("button", { name: "EXAMEN" }).click(); await p.waitForTimeout(200);
+    assert.equal(await activo(), "EXAMEN");
+    await p.goBack(); await p.waitForTimeout(300);
+    assert.equal(await activo(), "REPASO"); assert.match(p.url(), /#\/temas$/);
+    await p.goBack(); await p.waitForTimeout(300);
+    assert.equal(await activo(), "INICIO");
+    await p.goForward(); await p.waitForTimeout(300);
+    assert.equal(await activo(), "REPASO");
+    await ctx.close();
+  });
+
+  await paso("G4 claro/oscuro: un solo estado, persiste al recargar y vale en todas las pantallas", async () => {
+    const ctx = await contexto({ colorScheme: "light" }); const p = await ctx.newPage();
+    await p.goto(URL_APP); await sembrar(p, SEMBRADO); await p.reload(); await p.waitForTimeout(400);
+    const tema = () => p.evaluate(() => document.documentElement.dataset.theme);
+    assert.equal(await tema(), "light");
+    await p.locator(".tema-btn").click();
+    assert.equal(await tema(), "dark");
+    assert.equal(await leerAlmacen(p, "guia-pe-tema"), "dark");
+    await p.reload(); await p.waitForTimeout(400);
+    assert.equal(await tema(), "dark");
+    await p.locator(".cambiar-materia").click(); // pantalla previa: mismo tema
+    assert.equal(await tema(), "dark");
+    await p.locator(".tema-btn").click();
+    assert.equal(await tema(), "light");
+    await p.getByRole("button", { name: /ENTRAR/ }).click(); await p.waitForTimeout(300);
+    assert.equal(await tema(), "light");
+    assert.equal(await leerAlmacen(p, "guia-pe-tema"), "light");
+    await p.reload(); await p.waitForTimeout(400);
+    assert.equal(await tema(), "light");
+    await ctx.close();
+  });
+
+  await paso("G5 la barra del selector de materia muestra nivel y batería reales", async () => {
+    const { ctx, p } = await nuevaPagina(SEMBRADO);
+    await p.locator(".cambiar-materia").click(); await p.waitForTimeout(200);
+    const dominadas = idsPE.slice(0, 30).filter((_, i) => i % 2 === 0).length;
+    assert.equal(await lv(p), "LV. 03");
+    assert.equal(await materiaBarra(p), "PE");
+    assert.match(await p.locator(".estado .bateria").getAttribute("title"), new RegExp(`^${dominadas} de ${idsPE.length}`));
+    assert.equal(await p.locator(".estado .bateria i.on").count(), Math.ceil((dominadas / idsPE.length) * 4));
+    await p.reload(); await p.waitForTimeout(400); // sin materia activa guardada: la barra usa PE
+    assert.equal(await lv(p), "LV. 03");
+    await ctx.close();
+    const vacio = await nuevaPagina(SINPROGRESO);
+    await vacio.p.getByRole("radio").first().waitFor(); assert.match(await texto(vacio.p), /ENTRAR/);
+    assert.equal(await lv(vacio.p), "LV. 01");
+    assert.equal(await vacio.p.locator(".estado .bateria i.on").count(), 0);
+    await vacio.ctx.close();
+  });
+
+  await paso("G6 LEVEL UP al subir de nivel, y no al cargar", async () => {
+    const { ctx, p, errs } = await nuevaPagina({ ...SEMBRADO, "guia-pe-progreso-v1": { xp: 95, preguntas: {}, simulacros: [], diasEstudio: [dia(0)] } });
+    assert.equal(await p.locator(".level-up").count(), 0);
+    await ir(p, "/tema/1");
+    await p.getByRole("tab", { name: "Practicar" }).click();
+    const enunciado = await p.locator("h2.pregunta").textContent();
+    const textos = await p.locator(".opcion .op-texto").allTextContents();
+    const r = PREGUNTAS_PE.find((q) => q.pregunta === enunciado && [...q.opciones].sort().join("|") === [...textos].sort().join("|"));
+    await p.keyboard.press(String(textos.indexOf(r.opciones[r.correcta]) + 1));
+    await p.locator(".level-up").waitFor({ timeout: 2000 });
+    assert.equal(await p.locator(".level-up").getAttribute("role"), "status");
+    assert.match(await p.locator(".level-up").innerText(), /LEVEL UP/);
+    assert.equal(await lv(p), "LV. 02");
+    await p.locator(".level-up").waitFor({ state: "detached", timeout: 4000 });
+    assert.deepEqual(errs, []);
+    await ctx.close();
+  });
+
+  await paso("G7 #/importar?d=… funciona al cambiar el hash sin recargar", async () => {
+    const { ctx, p, errs } = await nuevaPagina(SEMBRADO);
+    await p.evaluate(() => { window.__sinRecarga = true; });
+    await p.evaluate((h) => { location.hash = h; }, hashEnlace);
+    await p.getByRole("button", { name: "Combinar con lo de aquí" }).waitFor({ timeout: 3000 });
+    assert.equal(await p.evaluate(() => window.__sinRecarga), true); // la página no se recargó
+    assert.match(await texto(p), new RegExp(perfilParaEnlace.nombre, "i"));
+    assert.equal(await p.locator("nav.nav button:not([disabled])").count(), 0);
+    await p.getByRole("button", { name: "Combinar con lo de aquí" }).click();
+    await p.getByRole("radio").first().waitFor(); assert.match(await texto(p), /Selecciona una materia|ENTRAR/);
+    assert.deepEqual(await leerAlmacen(p, "grimorio-perfil-v1"), perfilParaEnlace);
+    assert.deepEqual(errs, []);
+    await ctx.close();
+    // y si se sale de la importación sin guardar, la app vuelve
+    const otra = await nuevaPagina(SEMBRADO);
+    await otra.p.evaluate((h) => { location.hash = h; }, hashEnlace);
+    await otra.p.getByRole("button", { name: "Combinar con lo de aquí" }).waitFor();
+    await otra.p.evaluate(() => { location.hash = "/"; });
+    await otra.p.waitForTimeout(300);
+    assert.equal(await materiaBarra(otra.p), "PE");
+    assert.equal(await otra.p.locator("main#contenido").count(), 1);
+    await otra.ctx.close();
   });
 
   await paso("A5 la página principal no produjo errores de JavaScript", async () => assert.deepEqual(erroresA, []));

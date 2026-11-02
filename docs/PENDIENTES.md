@@ -5,7 +5,7 @@ comprobar que quedó resuelto. Al terminar un pendiente, bórralo de aquí en el
 
 ## Fase 7
 
-### `#/importar?d=…` también debe funcionar si se cambia el hash sin recargar
+### ✅ HECHO (fase 7) · `#/importar?d=…` también debe funcionar si se cambia el hash sin recargar
 
 - **Qué pasa hoy:** `App` (`src/AppRoot.jsx`) calcula `importar = leerRuta() === "importar"` solo al
   renderizar, y únicamente `Aplicacion` escucha `hashchange`. Si la app ya está abierta y se pega el
@@ -26,3 +26,6 @@ comprobar que quedó resuelto. Al terminar un pendiente, bórralo de aquí en el
 - **Qué hacer:** al abrir, enfocar el botón seguro (Cancelar); atrapar Tab dentro; Escape cancela; al cerrar,
   devolver el foco al botón que lo abrió. Decidir si "borrar progreso" también es `alertdialog`.
 - **Cómo comprobarlo:** ampliar las pruebas F de `tests/e2e/e2e.mjs` (F4 hoy fija el orden Cancelar → Confirmar).
+
+- **Resuelto en la fase 7:** la ruta se lee y escucha en un solo lugar (`useRuta`, `src/lib/ruta.js`) y `App` deriva de
+  ahí si está en importar. `abrirEnlace` del e2e ya no recarga; la prueba G7 cambia el hash sin recargar.
