@@ -3,7 +3,12 @@ import { TEMAS } from "../data/contenido.js";
 import { XP_POR_NIVEL } from "../lib/nivel.js";
 import HadaRetrato from "../components/HadaRetrato.jsx";
 import Transferencia from "../components/Transferencia.jsx";
-import Escena from "../components/Escena.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
+import Encabezado from "../components/Encabezado.jsx";
+import BarraXP from "../components/BarraXP.jsx";
+import Pips from "../components/Pips.jsx";
+import FilaTema from "../components/FilaTema.jsx";
+import Confirmar from "../components/Confirmar.jsx";
 
 const fmt = (iso) => {
   try { return new Date(iso).toLocaleDateString("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); }
@@ -18,15 +23,13 @@ export default function Progreso({ prog, ir, perfil, setPerfil, materia }) {
   const guardarPerfil = (e) => { e.preventDefault(); setPerfil({ ...perfil, nombre: nombre.trim() || perfil.nombre }); setEditando(false); };
   return (
     <div className="vista">
-      <div className="escena-wrap">
-        <Escena hada={perfil.avatar} dia={prog.racha} compacto />
-      </div>
-      <section className="intro"><p className="eyebrow">Logros · {materia}</p><h1>Tu progreso</h1></section>
+      <ZonaEscena hada={perfil.avatar} dia={prog.racha} compacto />
+      <Encabezado eyebrow={`Logros · ${materia}`} titulo="Tu progreso" />
       <section className="nivel px">
         <HadaRetrato hada={perfil.avatar} />
         <div className="nivel-info">
           <span className="stat-k">{perfil.nombre} · Nivel</span><span className="stat-v">{prog.nivel}</span>
-          <div className="xp" aria-label={`${prog.xpNivel} de ${XP_POR_NIVEL} XP`}><i style={{ width: `${(prog.xpNivel / XP_POR_NIVEL) * 100}%` }} /></div>
+          <BarraXP xpNivel={prog.xpNivel} />
           <span className="stat-s">{prog.datos.xp} XP en total · racha de {prog.racha} día{prog.racha === 1 ? "" : "s"} · {XP_POR_NIVEL - prog.xpNivel} para subir</span>
           <span className="editar-perfil-acciones">
             <button className="btn-texto editar-perfil" onClick={() => setEditando(!editando)}>Cambiar nombre</button>
@@ -42,8 +45,12 @@ export default function Progreso({ prog, ir, perfil, setPerfil, materia }) {
       )}
       <section className="por-tema px"><h2 className="sub">Dominio por tema</h2>
         {TEMAS.map((t) => {
-          const est = prog.estadoTema(t.id); const { ok, total } = prog.resumenTema(t.id);
-          return <button className="barra-tema link" key={t.id} onClick={() => ir(`tema/${t.id}`)}><span className="bt-nombre">{t.id}. {t.corto}</span><span className="pips" aria-label={`${ok} de ${total}`}>{est.map((e, i) => <i key={i} className={e} />)}</span><span className="bt-num">{ok}/{total}</span></button>;
+          const { ok, total } = prog.resumenTema(t.id);
+          return (
+            <FilaTema key={t.id} tema={t} conteo={`${ok}/${total}`} onClick={() => ir(`tema/${t.id}`)}>
+              <Pips estados={prog.estadoTema(t.id)} etiqueta={`${ok} de ${total}`} />
+            </FilaTema>
+          );
         })}
       </section>
       <section className="historial px"><h2 className="sub">Historial de simulacros</h2>
@@ -51,8 +58,21 @@ export default function Progreso({ prog, ir, perfil, setPerfil, materia }) {
           <ol>{sims.map((s, k) => <li key={k}><span>{fmt(s.fecha)}</span><span className="h-barra"><i style={{ width: `${s.calificacion}%` }} /></span><b>{s.calificacion}</b></li>)}</ol>}
       </section>
       <Transferencia perfil={perfil} />
-      <div className="reinicio">{!borrado ? <button className="btn-texto" onClick={() => setBorrado(true)}>Borrar progreso de {materia}</button> :
-        <div className="confirmar px"><p>Se borrarán nivel, dominio y simulacros de esta materia. No se puede deshacer.</p><div className="acciones"><button className="btn px" onClick={() => setBorrado(false)}>Cancelar</button><button className="btn pink px" onClick={() => { prog.reiniciar(); setBorrado(false); }}>Sí, borrar</button></div></div>}</div>
+      <div className="reinicio">
+        {!borrado
+          ? <button className="btn-texto" onClick={() => setBorrado(true)}>Borrar progreso de {materia}</button>
+          : (
+            <Confirmar
+              textoCancelar="Cancelar"
+              onCancelar={() => setBorrado(false)}
+              textoConfirmar="Sí, borrar"
+              onConfirmar={() => { prog.reiniciar(); setBorrado(false); }}
+              claseConfirmar="btn pink px"
+            >
+              <p>Se borrarán nivel, dominio y simulacros de esta materia. No se puede deshacer.</p>
+            </Confirmar>
+          )}
+      </div>
     </div>
   );
 }
