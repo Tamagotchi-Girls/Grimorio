@@ -1,6 +1,8 @@
 import { useMemo } from "react";
-import Escena from "../components/Escena.jsx";
-import Bocadillo from "../components/Bocadillo.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
+import Encabezado from "../components/Encabezado.jsx";
+import Stat from "../components/Stat.jsx";
+import BarraXP from "../components/BarraXP.jsx";
 import Sprite from "../components/Sprite.jsx";
 import { PREGUNTAS, TEMAS } from "../data/contenido.js";
 import { materiaPorId } from "../data/materias.js";
@@ -24,16 +26,11 @@ export default function Inicio({ prog, ir, perfil, materia, onMateria }) {
 
   return (
     <div className="vista">
-      <div className="escena-wrap">
-        <Escena hada={perfil.avatar} dia={prog.racha} />
-        <Bocadillo texto={`${saludo}, ${perfil.nombre}. ${frase}`} className="bocadillo-escena" />
-      </div>
+      <ZonaEscena hada={perfil.avatar} dia={prog.racha} dialogo={`${saludo}, ${perfil.nombre}. ${frase}`} />
 
-      <section className="intro">
-        <p className="eyebrow">{materiaPorId(materia)?.etiqueta}</p>
-        <h1>Guía de estudio para el departamental</h1>
+      <Encabezado eyebrow={materiaPorId(materia)?.etiqueta} titulo="Guía de estudio para el departamental">
         <p className="lead">{textoResumenMateria(TEMAS, PREGUNTAS)} Repasa con apuntes, practica por tema y haz simulacros. Tu progreso se guarda en este dispositivo.</p>
-      </section>
+      </Encabezado>
       <div className="atajos-perfil">
         <button className="btn-texto cambiar-materia" onClick={onMateria}>← Cambiar de materia</button>
         <button className="btn-texto cambiar-hada" onClick={() => ir("hada")}>✦ Cambiar de hada</button>
@@ -57,24 +54,15 @@ export default function Inicio({ prog, ir, perfil, materia, onMateria }) {
       </div>
 
       <section className="stats">
-        <div className="stat px">
-          <span className="stat-k">Nivel</span>
-          <span className="stat-v">{prog.nivel}</span>
-          <div className="xp" aria-label={`${prog.xpNivel} de ${XP_POR_NIVEL} XP para el siguiente nivel`}>
-            <i style={{ width: `${(prog.xpNivel / XP_POR_NIVEL) * 100}%` }} />
-          </div>
-          <span className="stat-s">{prog.xpNivel}/{XP_POR_NIVEL} XP</span>
-        </div>
-        <div className="stat px">
-          <span className="stat-k">Dominados</span>
-          <span className="stat-v">{prog.dominadas}<small>/{PREGUNTAS.length}</small></span>
-          <span className="stat-s">{textoTemasCompletos(temasDominados, TEMAS)}</span>
-        </div>
-        <div className="stat px">
-          <span className="stat-k">Último simulacro</span>
-          <span className="stat-v">{ultimo ? ultimo.calificacion : "—"}</span>
-          <span className="stat-s">{ultimo ? `${ultimo.aciertos} de ${ultimo.total} aciertos` : "Aún no haces ninguno"}</span>
-        </div>
+        <Stat etiqueta="Nivel" valor={prog.nivel} nota={`${prog.xpNivel}/${XP_POR_NIVEL} XP`}>
+          <BarraXP xpNivel={prog.xpNivel} sufijo=" para el siguiente nivel" />
+        </Stat>
+        <Stat etiqueta="Dominados" valor={<>{prog.dominadas}<small>/{PREGUNTAS.length}</small></>} nota={textoTemasCompletos(temasDominados, TEMAS)} />
+        <Stat
+          etiqueta="Último simulacro"
+          valor={ultimo ? ultimo.calificacion : "—"}
+          nota={ultimo ? `${ultimo.aciertos} de ${ultimo.total} aciertos` : "Aún no haces ninguno"}
+        />
       </section>
     </div>
   );
