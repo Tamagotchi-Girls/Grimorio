@@ -1,10 +1,11 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 import { createElement as h } from "react";
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ContenidoProvider } from "../data/ContenidoContext.jsx";
 import { CONTENIDO } from "../data/contenido.js";
 import { useProgreso } from "./progreso.js";
+import { instalarAlmacenFalso } from "./almacenFalso.js";
 
 const PE = CONTENIDO.PE.PREGUNTAS, FP = CONTENIDO.FP.PREGUNTAS;
 const guardar = (clave, xp, ids = []) => localStorage.setItem(clave, JSON.stringify({
@@ -13,8 +14,9 @@ const guardar = (clave, xp, ids = []) => localStorage.setItem(clave, JSON.string
 const conMateria = (materia) => ({ children }) => h(ContenidoProvider, { materia }, children);
 const leer = (clave) => JSON.parse(localStorage.getItem(clave));
 
+let almacen;
 beforeEach(() => {
-  localStorage.clear();
+  almacen = instalarAlmacenFalso();
   guardar("guia-pe-progreso-v1", 250, [PE[0].id]);
   guardar("guia-fp-progreso-v1", 30, [FP[0].id, FP[1].id]);
 });
@@ -55,14 +57,13 @@ describe("useProgreso", () => {
 
   it("registrarVarias aplica toda la lista en una sola actualización (un solo guardado)", () => {
     const { result } = renderHook(() => useProgreso(), { wrapper: conMateria("PE") });
-    const escrituras = vi.spyOn(Storage.prototype, "setItem");
+    const escrituras = almacen.setItem;
     escrituras.mockClear();
     const lista = PE.slice(1, 21).map((p, k) => [p.id, k % 2 === 0]);
     act(() => result.current.registrarVarias(lista));
     expect(result.current.datos.xp).toBe(250 + 10 * 10);
     expect(Object.keys(result.current.datos.preguntas)).toHaveLength(21);
     expect(escrituras.mock.calls.filter(([k]) => k === "guia-pe-progreso-v1")).toHaveLength(1);
-    escrituras.mockRestore();
   });
 
   it("terminar un simulacro (registrarVarias + guardarSimulacro) guarda xp, preguntas y el simulacro", () => {
