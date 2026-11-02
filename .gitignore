@@ -19,3 +19,6 @@ logs/
 # beside it.
 /.plugins/
 /.opencode-skills/
+
+# Capturas de referencia para comparar refactors (se regeneran con pnpm capturas)
+capturas/
