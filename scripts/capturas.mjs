@@ -5,7 +5,14 @@
 //   pnpm capturas fase-2 --base base    # guarda capturas/fase-2/ y la compara con capturas/base/
 //
 // Opciones: --build (corre `vite build` antes), --solo <texto> (solo pantallas cuyo nombre lo contenga),
-// --puerto <n> (por defecto 4173).
+// --puerto <n> (por defecto 4173), --movimiento (ver abajo).
+//
+// Modo --movimiento: lo mismo pero SIN prefers-reduced-motion, para comprobar que las animaciones
+// siguen presentes tras tocar el CSS. El reloj es falso (se avanza a mano) y las animaciones CSS se
+// congelan en un instante fijo con la API de animaciones web; además se guarda en _animaciones.json
+// qué animaciones estaban activas en cada pantalla y la comparación también las contrasta.
+//   pnpm capturas mov-base --movimiento
+//   pnpm capturas mov-fase-2 --movimiento --base mov-base
 //
 // Para que dos corridas sean idénticas se fija todo lo que cambia solo: reloj (2026-06-15 10:30),
 // Math.random (generador con semilla), zona horaria, movimiento reducido (sin animaciones ni
@@ -38,6 +45,8 @@ if (!nombreCarpeta) {
 }
 const carpetaBase = opcion("base");
 const filtro = opcion("solo");
+const MOVIMIENTO = args.includes("--movimiento");
+const INSTANTE_ANIMACION = 650; // ms en los que se congelan las animaciones CSS en modo --movimiento
 const PUERTO = Number(opcion("puerto")) || 4173;
 const URL_APP = `http://127.0.0.1:${PUERTO}`;
 
@@ -80,6 +89,13 @@ const ESCENARIOS = {
     "grimorio-perfil-v1": PERFIL,
     "grimorio-materia-activa": "PE",
     "guia-pe-progreso-v1": PROGRESO_PE,
+    "guia-fp-progreso-v1": PROGRESO_FP,
+  }),
+  // a un acierto de subir de nivel (para ver la animación de level-up)
+  peCasiNivel: () => ({
+    "grimorio-perfil-v1": PERFIL,
+    "grimorio-materia-activa": "PE",
+    "guia-pe-progreso-v1": { ...PROGRESO_PE, xp: 295 },
     "guia-fp-progreso-v1": PROGRESO_FP,
   }),
   fp: () => ({
@@ -203,11 +219,78 @@ const PANTALLAS = [
   { nombre: "importar-invalido", escenario: "pe", hash: "/importar?d=basura" },
 ];
 
-const VIEWPORTS = [
+// Responde el reactivo que está en pantalla. Las opciones salen barajadas, así que se busca el reactivo
+// por su enunciado y sus opciones para saber cuál tecla es la correcta (o una incorrecta).
+async function responderReactivo(page, bien) {
+  const enunciado = await page.locator("h2.pregunta").textContent();
+  const textos = await page.locator(".opcion .op-texto").allTextContents();
+  const reactivo = PREGUNTAS_PE.find(
+    (p) => p.pregunta === enunciado && [...p.opciones].sort().join("\u0000") === [...textos].sort().join("\u0000"),
+  );
+  if (!reactivo) throw new Error(`No encontré el reactivo "${enunciado}"`);
+  const correcta = textos.indexOf(reactivo.opciones[reactivo.correcta]);
+  const indice = bien ? correcta : (correcta + 1) % textos.length;
+  await page.keyboard.press(String(indice + 1));
+}
+
+const practicarTema1 = async (page) => {
+  await page.getByRole("tab", { name: "Practicar" }).click();
+};
+
+// Pantallas del modo --movimiento: una por cada animación viva (paisaje, ▼ del diálogo, +XP,
+// level-up, trofeo) en los estados que las disparan.
+const PANTALLAS_MOVIMIENTO = [
+  { nombre: "inicio-pe", escenario: "pe", hash: "/" },
+  {
+    nombre: "tema-acierto",
+    escenario: "pe",
+    hash: "/tema/1",
+    pasos: async (page) => {
+      await practicarTema1(page);
+      await responderReactivo(page, true);
+    },
+  },
+  {
+    nombre: "tema-fallo",
+    escenario: "pe",
+    hash: "/tema/1",
+    pasos: async (page) => {
+      await practicarTema1(page);
+      await responderReactivo(page, false);
+    },
+  },
+  {
+    nombre: "tema-subir-nivel",
+    escenario: "peCasiNivel",
+    hash: "/tema/1",
+    pasos: async (page) => {
+      await practicarTema1(page);
+      await responderReactivo(page, true);
+    },
+  },
+  {
+    // tema completo sin fallar: aparece el trofeo con la animación "festejo"
+    nombre: "tema-dominado",
+    escenario: "pe",
+    hash: "/tema/1",
+    pasos: async (page) => {
+      await practicarTema1(page);
+      for (let k = 0; k < reactivosTema1; k++) {
+        await responderReactivo(page, true);
+        await page.keyboard.press("Enter");
+      }
+    },
+  },
+  PANTALLAS.find((p) => p.nombre === "simulacro-resultados"),
+];
+
+const TODOS_LOS_VIEWPORTS = [
   { nombre: "1440x900", width: 1440, height: 900 },
   { nombre: "820x1180", width: 820, height: 1180 },
   { nombre: "390x844", width: 390, height: 844 },
 ];
+// en modo --movimiento solo laptop y celular
+const VIEWPORTS = MOVIMIENTO ? TODOS_LOS_VIEWPORTS.filter((v) => v.width !== 820) : TODOS_LOS_VIEWPORTS;
 const MODOS = ["claro", "oscuro"];
 
 // ───────── servidor de la build
@@ -252,28 +335,59 @@ const preparacion = ({ almacen, tema }) => {
   localStorage.setItem("guia-pe-tema", tema);
 };
 
-async function estabilizar(page) {
+// `avance` (ms) solo se usa en modo --movimiento: cuánto adelanta el reloj falso para que terminen la
+// máquina de escribir de los diálogos y las secuencias de animación del hada.
+async function estabilizar(page, avance = 0) {
+  if (MOVIMIENTO) {
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      await Promise.all([...document.images].map((img) => img.decode().catch(() => {})));
+    });
+    await page.clock.runFor(avance);
+    await page.waitForTimeout(150); // deja que React pinte lo que dispararon los temporizadores
+    return;
+  }
   await page.evaluate(() => document.fonts.ready);
   await page.waitForFunction(() => [...document.images].every((img) => img.complete));
   await page.waitForTimeout(350); // deja que Escena calcule su escala con ResizeObserver
 }
 
-async function capturarPantalla(contexto, pantalla, vp, modo, destino) {
+// Modo --movimiento: las animaciones CSS nacen en pausa (y sin transiciones), así que no dependen del
+// tiempo real; al final cada una se coloca en un instante fijo. Devuelve los nombres de las que había.
+const PAUSAR_ANIMACIONES = "*, *::before, *::after { animation-play-state: paused !important; transition: none !important; }";
+
+async function congelarAnimaciones(page, instante) {
+  return page.evaluate((t) => {
+    const nombres = new Set();
+    for (const a of document.getAnimations()) {
+      const { iterations, endTime } = a.effect.getComputedTiming();
+      if (a.animationName) nombres.add(a.animationName);
+      a.pause();
+      // las que se repiten, en `instante`; las que terminan, a la mitad (la de destello, casi al final: ya sin blanco)
+      a.currentTime = iterations === Infinity ? t : endTime * (a.animationName === "level-flash" ? 0.9 : 0.5);
+    }
+    return [...nombres].sort();
+  }, instante);
+}
+
+async function capturarPantalla(contexto, pantalla, vp, modo, destino, animaciones) {
   const almacen = ESCENARIOS[pantalla.escenario]();
   const page = await contexto.newPage();
   page.setDefaultTimeout(8000);
   try {
     await page.addInitScript(preparacion, { almacen, tema: modo === "oscuro" ? "dark" : "light" });
     const ruta = pantalla.hash === null ? enlaceImportar() : `/#${pantalla.hash}`;
-    await page.goto(URL_APP + ruta, { waitUntil: "networkidle" });
-    await estabilizar(page);
+    await page.goto(URL_APP + ruta, { waitUntil: MOVIMIENTO ? "load" : "networkidle" });
+    if (MOVIMIENTO) await page.addStyleTag({ content: PAUSAR_ANIMACIONES });
+    await estabilizar(page, 6000);
     if (pantalla.pasos) {
       await pantalla.pasos(page);
-      await estabilizar(page);
+      await estabilizar(page, 500);
     }
     const base = `${pantalla.nombre}__${vp.nombre}__${modo}`;
+    if (MOVIMIENTO) animaciones[`${base}.png`] = await congelarAnimaciones(page, INSTANTE_ANIMACION);
     await page.screenshot({ path: path.join(destino, `${base}.png`) });
-    if (pantalla.fin) {
+    if (pantalla.fin && !MOVIMIENTO) {
       const hayScroll = await page.evaluate(() => {
         const p = document.querySelector(".pantalla");
         if (!p || p.scrollHeight <= p.clientHeight + 1) return false;
@@ -288,6 +402,30 @@ async function capturarPantalla(contexto, pantalla, vp, modo, destino) {
   } finally {
     await page.close();
   }
+}
+
+// ───────── comparación de las animaciones activas (solo si ambas carpetas vienen de --movimiento)
+function compararAnimaciones(carpetaNueva, carpetaVieja) {
+  const leer = (c) => {
+    const f = path.join(c, "_animaciones.json");
+    return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : null;
+  };
+  const nuevas = leer(carpetaNueva);
+  const viejas = leer(carpetaVieja);
+  if (!nuevas || !viejas) return 0;
+  const todas = new Set(Object.values(nuevas).flat());
+  console.log(`\n  Animaciones CSS detectadas: ${[...todas].sort().join(", ")}`);
+  let diferencias = 0;
+  for (const archivo of Object.keys({ ...viejas, ...nuevas })) {
+    const a = (viejas[archivo] ?? []).join(", ");
+    const b = (nuevas[archivo] ?? []).join(", ");
+    if (a !== b) {
+      diferencias++;
+      console.log(`    DISTINTO ${archivo.replace(".png", "")}\n      antes:  ${a || "(ninguna)"}\n      ahora:  ${b || "(ninguna)"}`);
+    }
+  }
+  if (!diferencias) console.log("  Las animaciones activas por pantalla son las mismas que en la base.");
+  return diferencias;
 }
 
 // ───────── comparación con pixelmatch
@@ -333,7 +471,8 @@ function comparar(carpetaNueva, carpetaVieja) {
   }
   if (nuevasSinBase.length) console.log(`\n  Sin captura base: ${nuevasSinBase.join(", ")}`);
   if (viejas.size) console.log(`\n  Estaban en la base y ya no: ${[...viejas].join(", ")}`);
-  return cambios.length + nuevasSinBase.length + viejas.size;
+  const diferenciasAnimaciones = compararAnimaciones(carpetaNueva, carpetaVieja);
+  return cambios.length + nuevasSinBase.length + viejas.size + diferenciasAnimaciones;
 }
 
 // ───────── principal
@@ -354,10 +493,11 @@ async function main() {
   const servidor = iniciarPreview();
   const navegador = await chromium.launch();
   const fallos = [];
+  const animaciones = {}; // archivo.png → nombres de las animaciones CSS activas (solo --movimiento)
   let total = 0;
   try {
     await esperar(URL_APP);
-    const pantallas = PANTALLAS.filter((p) => !filtro || p.nombre.includes(filtro));
+    const pantallas = (MOVIMIENTO ? PANTALLAS_MOVIMIENTO : PANTALLAS).filter((p) => !filtro || p.nombre.includes(filtro));
     for (const vp of VIEWPORTS) {
       for (const modo of MODOS) {
         const contexto = await navegador.newContext({
@@ -366,12 +506,14 @@ async function main() {
           locale: "es-MX",
           timezoneId: "America/Mexico_City",
           colorScheme: modo === "oscuro" ? "dark" : "light",
-          reducedMotion: "reduce",
+          reducedMotion: MOVIMIENTO ? "no-preference" : "reduce",
         });
-        await contexto.clock.setFixedTime(AHORA);
+        // con movimiento el reloj es falso y solo avanza cuando el script lo manda
+        if (MOVIMIENTO) await contexto.clock.install({ time: AHORA });
+        else await contexto.clock.setFixedTime(AHORA);
         for (const pantalla of pantallas) {
           try {
-            await capturarPantalla(contexto, pantalla, vp, modo, destino);
+            await capturarPantalla(contexto, pantalla, vp, modo, destino, animaciones);
             total++;
           } catch (error) {
             fallos.push(`${pantalla.nombre} ${vp.nombre} ${modo}: ${error.message.split("\n")[0]}`);
@@ -386,6 +528,7 @@ async function main() {
     servidor.kill();
   }
 
+  if (MOVIMIENTO) fs.writeFileSync(path.join(destino, "_animaciones.json"), JSON.stringify(animaciones, null, 2));
   console.log(`\n${total} pantallas guardadas en capturas/${nombreCarpeta}/`);
   if (fallos.length) {
     console.error(`\n${fallos.length} captura(s) fallaron:\n  ${fallos.join("\n  ")}`);
