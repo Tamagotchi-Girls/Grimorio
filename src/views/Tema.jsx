@@ -8,7 +8,9 @@ import { indiceDeTecla, textoTeclas } from "../lib/teclado.js";
 import Codigo from "../components/Codigo.jsx";
 import Reactivo from "../components/Reactivo.jsx";
 import Sprite from "../components/Sprite.jsx";
-import Escena from "../components/Escena.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
+import Encabezado from "../components/Encabezado.jsx";
+import Pips from "../components/Pips.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 
 export default function Tema({ id, prog, ir, perfil }) {
@@ -57,19 +59,14 @@ export default function Tema({ id, prog, ir, perfil }) {
 
   return (
     <div className="vista">
-      <div className="escena-wrap">
-        <Escena
-          hada={perfil.avatar}
-          dia={prog.racha}
-          compacto
-          secuencia={respondida ? (actual.opcionesBarajadas[sel].correcta ? "acierto" : "fallo") : "reposo"}
-        />
-      </div>
+      <ZonaEscena
+        hada={perfil.avatar}
+        dia={prog.racha}
+        compacto
+        secuencia={respondida ? (actual.opcionesBarajadas[sel].correcta ? "acierto" : "fallo") : "reposo"}
+      />
       <button className="volver" onClick={() => ir("temas")}>← Temas</button>
-      <section className="intro">
-        <p className="eyebrow">{textoNumeroDeTema(tema.id, TEMAS)}</p>
-        <h1>{tema.nombre}</h1>
-      </section>
+      <Encabezado eyebrow={textoNumeroDeTema(tema.id, TEMAS)} titulo={tema.nombre} />
 
       <div className="pestanas" role="tablist">
         <button role="tab" aria-selected={pestana === "apuntes"} className={`pestana px ${pestana === "apuntes" ? "on" : ""}`} onClick={() => setPestana("apuntes")}>Apuntes</button>
@@ -95,13 +92,13 @@ export default function Tema({ id, prog, ir, perfil }) {
         <section className="practica">
           <div className="progreso-ronda">
             <span>Reactivo {i + 1} de {reactivos.length}</span>
-            <span className="pips grandes">
-              {reactivos.map((r, k) => {
+            <Pips
+              className="grandes"
+              estados={reactivos.map((r, k) => {
                 const s = respuestas[k];
-                const c = s === undefined ? (k === i ? "actual" : "nada") : r.opcionesBarajadas[s].correcta ? "ok" : "mal";
-                return <i key={k} className={c} />;
+                return s === undefined ? (k === i ? "actual" : "nada") : r.opcionesBarajadas[s].correcta ? "ok" : "mal";
               })}
-            </span>
+            />
           </div>
           <Reactivo key={`${ronda}-${i}`} reactivo={actual} seleccion={sel} onElegir={elegir} revelar={respondida} />
           {respondida && actual.opcionesBarajadas[sel].correcta && <span className="xp-flotante" aria-live="polite">+{XP_POR_ACIERTO} XP</span>}
