@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { CONTENIDO, PREGUNTAS } from "../data/contenido.js";
+import { CONTENIDO } from "../data/contenido.js";
+import { useContenido } from "../data/ContenidoContext.jsx";
 import { claveProgreso, escribirJSON, leerJSON } from "./almacenamiento.js";
 import { XP_POR_ACIERTO, nivelDe, xpEnNivel } from "./nivel.js";
 import { normalizarProgreso, progresoVacio } from "./validacion.js";
@@ -12,8 +13,18 @@ export const leerProgreso = (materia) => normalizarProgreso(leerJSON(claveProgre
 
 export const guardarProgreso = (materia, datos) => escribirJSON(claveProgreso(materia), datos);
 
-export function useProgreso(materia = "PE") {
-  const [datos, setDatos] = useState(() => leerProgreso(materia));
+// Progreso de la materia activa (la del ContenidoProvider). Si la materia cambia sin que el componente se
+// desmonte, se carga el progreso de la nueva materia en ese mismo render, antes de que se guarde nada.
+export function useProgreso() {
+  const { materia, PREGUNTAS } = useContenido();
+  const [estado, setEstado] = useState(() => ({ materia, datos: leerProgreso(materia) }));
+  let actual = estado;
+  if (estado.materia !== materia) {
+    actual = { materia, datos: leerProgreso(materia) };
+    setEstado(actual);
+  }
+  const datos = actual.datos;
+  const setDatos = useCallback((f) => setEstado((e) => ({ ...e, datos: f(e.datos) })), []);
 
   useEffect(() => { guardarProgreso(materia, datos); }, [datos, materia]);
 
@@ -30,13 +41,13 @@ export function useProgreso(materia = "PE") {
         }
       };
     });
-  }, []);
+  }, [setDatos]);
 
   const guardarSimulacro = useCallback((resultado) => {
     setDatos(d => ({ ...d, diasEstudio: conDia(d.diasEstudio), simulacros: [...d.simulacros, resultado].slice(-MAX_SIMULACROS) }));
-  }, []);
+  }, [setDatos]);
 
-  const reiniciar = useCallback(() => setDatos(progresoVacio()), []);
+  const reiniciar = useCallback(() => setDatos(() => progresoVacio()), [setDatos]);
 
   const nivel = nivelDe(datos.xp);
   const xpNivel = xpEnNivel(datos.xp);

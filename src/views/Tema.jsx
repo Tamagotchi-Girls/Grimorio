@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { PREGUNTAS, TEMAS } from "../data/contenido.js";
+import { useContenido } from "../data/ContenidoContext.jsx";
 import { prepararReactivo } from "../lib/progreso.js";
 import { XP_POR_ACIERTO } from "../lib/nivel.js";
 import { medallaDeTema } from "../lib/medallas.js";
@@ -14,6 +14,7 @@ import Pips from "../components/Pips.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 
 export default function Tema({ id, prog, ir, perfil }) {
+  const { TEMAS, PREGUNTAS } = useContenido();
   const tema = TEMAS.find(t => t.id === id);
   const [pestana, setPestana] = useState("apuntes");
   const [pagina, setPagina] = useState(0);

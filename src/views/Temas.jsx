@@ -1,4 +1,4 @@
-import { TEMAS } from "../data/contenido.js";
+import { useContenido } from "../data/ContenidoContext.jsx";
 import ZonaEscena from "../components/ZonaEscena.jsx";
 import Encabezado from "../components/Encabezado.jsx";
 import CursorMenu from "../components/CursorMenu.jsx";
@@ -6,6 +6,7 @@ import Pips from "../components/Pips.jsx";
 import { dosDigitos } from "../lib/formato.js";
 
 export default function Temas({ prog, ir, perfil }) {
+  const { TEMAS } = useContenido();
   return (
     <div className="vista">
       <ZonaEscena hada={perfil.avatar} dia={prog.racha} compacto />

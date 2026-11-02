@@ -10,7 +10,8 @@ import Materias from "./views/Materias.jsx";
 import Importar from "./views/Importar.jsx";
 import ElegirHada from "./views/ElegirHada.jsx";
 import { resumenMateria, useProgreso } from "./lib/progreso.js";
-import { CONTENIDO, PREGUNTAS, usarMateria } from "./data/contenido.js";
+import { CONTENIDO } from "./data/contenido.js";
+import { ContenidoProvider, useContenido } from "./data/ContenidoContext.jsx";
 import { normalizarPerfil } from "./lib/validacion.js";
 import Bocadillo from "./components/Bocadillo.jsx";
 import Hada from "./components/Hada.jsx";
@@ -26,8 +27,8 @@ const materiaGuardada = () => {
 };
 
 function Aplicacion({ perfil, setPerfil, materia, setMateria, ruta, ir, tema, onTema }) {
-  usarMateria(materia);
-  const prog = useProgreso(materia);
+  const { PREGUNTAS } = useContenido();
+  const prog = useProgreso();
   const levelUp = useAvisoNivel(prog.nivel);
   const cambiarMateria = () => { setMateria(null); quitar(CLAVES.materiaActiva); location.hash = "/materias"; };
   const [base, param] = ruta.split("/");
@@ -99,7 +100,13 @@ export default function App() {
       </Aparato>
     );
   } else {
-    contenido = <Aplicacion key={materia} perfil={perfil} setPerfil={setPerfil} materia={materia} setMateria={abrirSelector} ruta={ruta} ir={ir} tema={tema} onTema={alternarTema} />;
+    // key: cada materia empieza con las vistas limpias (práctica y simulacro en curso, aviso de nivel); el contenido
+    // y el progreso ya no dependen de ella.
+    contenido = (
+      <ContenidoProvider materia={materia}>
+        <Aplicacion key={materia} perfil={perfil} setPerfil={setPerfil} materia={materia} setMateria={abrirSelector} ruta={ruta} ir={ir} tema={tema} onTema={alternarTema} />
+      </ContenidoProvider>
+    );
   }
   return (
     <div className="mesa">

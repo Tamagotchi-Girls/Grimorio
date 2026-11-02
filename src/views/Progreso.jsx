@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TEMAS } from "../data/contenido.js";
+import { useContenido } from "../data/ContenidoContext.jsx";
 import { XP_POR_NIVEL } from "../lib/nivel.js";
 import HadaRetrato from "../components/HadaRetrato.jsx";
 import Transferencia from "../components/Transferencia.jsx";
@@ -16,6 +16,7 @@ const fmt = (iso) => {
 };
 
 export default function Progreso({ prog, ir, perfil, setPerfil, materia }) {
+  const { TEMAS } = useContenido();
   const [editando, setEditando] = useState(false);
   const [borrado, setBorrado] = useState(false);
   const [nombre, setNombre] = useState(perfil.nombre);

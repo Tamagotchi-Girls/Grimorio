@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { PREGUNTAS, TEMAS } from "../data/contenido.js";
-import { barajar, prepararReactivo } from "../lib/progreso.js";
+import { useContenido } from "../data/ContenidoContext.jsx";
+import { nuevoSimulacro } from "../lib/simulacro.js";
 import { XP_POR_ACIERTO } from "../lib/nivel.js";
 import { medallaDeSimulacro } from "../lib/medallas.js";
-import { reactivosPorTemaEnSimulacro, textoReglaSimulacro } from "../lib/conteos.js";
+import { textoReglaSimulacro } from "../lib/conteos.js";
 import { indiceDeTecla } from "../lib/teclado.js";
 import Reactivo from "../components/Reactivo.jsx";
 import Sprite from "../components/Sprite.jsx";
@@ -12,13 +12,8 @@ import Encabezado from "../components/Encabezado.jsx";
 import Confirmar from "../components/Confirmar.jsx";
 import FilaTema from "../components/FilaTema.jsx";
 
-function nuevoSimulacro() {
-  // los mismos reactivos de cada tema, para que el examen cubra todos los temas, en orden aleatorio.
-  const elegidos = TEMAS.flatMap(t => barajar(PREGUNTAS.filter(p => p.tema === t.id)).slice(0, reactivosPorTemaEnSimulacro(TEMAS)));
-  return barajar(elegidos).map(prepararReactivo);
-}
-
 export default function Simulacro({ prog, ir, perfil }) {
+  const { TEMAS, PREGUNTAS } = useContenido();
   const [fase, setFase] = useState("intro");
   const [reactivos, setReactivos] = useState([]);
   const [resp, setResp] = useState({});
@@ -28,7 +23,7 @@ export default function Simulacro({ prog, ir, perfil }) {
   const [resultado, setResultado] = useState(null);
 
   const empezar = () => {
-    setReactivos(nuevoSimulacro());
+    setReactivos(nuevoSimulacro(TEMAS, PREGUNTAS));
     setResp({}); setMarcadas({}); setI(0); setConfirmar(false); setResultado(null);
     setFase("jugando");
   };

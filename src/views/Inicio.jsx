@@ -4,7 +4,7 @@ import Encabezado from "../components/Encabezado.jsx";
 import Stat from "../components/Stat.jsx";
 import BarraXP from "../components/BarraXP.jsx";
 import Sprite from "../components/Sprite.jsx";
-import { PREGUNTAS, TEMAS } from "../data/contenido.js";
+import { useContenido } from "../data/ContenidoContext.jsx";
 import { materiaPorId } from "../data/materias.js";
 import { textoCaminoSimulacro, textoCaminoTemas, textoResumenMateria, textoTemasCompletos } from "../lib/conteos.js";
 import { XP_POR_NIVEL } from "../lib/nivel.js";
@@ -18,6 +18,7 @@ const FRASES = [
 ];
 
 export default function Inicio({ prog, ir, perfil, materia, onMateria }) {
+  const { TEMAS, PREGUNTAS } = useContenido();
   const h = new Date().getHours();
   const saludo = h < 12 ? "¡Buenos días!" : h < 19 ? "¡Buenas tardes!" : "¡Buenas noches!";
   const frase = useMemo(() => FRASES[Math.floor(Math.random() * FRASES.length)], []);

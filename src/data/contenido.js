@@ -1,21 +1,17 @@
-// Contenido de la materia activa. Las vistas importan TEMAS y PREGUNTAS desde aquí;
-// AppRoot llama a usarMateria() antes de dibujar, y como los exports de ES modules son
-// "vivos", todas las vistas leen el contenido de la materia elegida.
+// Contenido de cada materia: datos constantes, sin estado. La materia activa se obtiene con
+// `useContenido()` (ver ContenidoContext.jsx), no con valores globales que cambien.
 import { TEMAS as TEMAS_PE } from "./temas.js";
 import { PREGUNTAS as PREGUNTAS_PE } from "./preguntas.js";
 import { TEMAS as TEMAS_FP } from "./fp/temas.js";
 import { PREGUNTAS as PREGUNTAS_FP } from "./fp/preguntas.js";
 
-export const CONTENIDO = {
-  PE: { TEMAS: TEMAS_PE, PREGUNTAS: PREGUNTAS_PE },
-  FP: { TEMAS: TEMAS_FP, PREGUNTAS: PREGUNTAS_FP },
-};
+export const CONTENIDO = Object.freeze({
+  PE: Object.freeze({ TEMAS: TEMAS_PE, PREGUNTAS: PREGUNTAS_PE }),
+  FP: Object.freeze({ TEMAS: TEMAS_FP, PREGUNTAS: PREGUNTAS_FP }),
+});
 
-export let TEMAS = TEMAS_PE;
-export let PREGUNTAS = PREGUNTAS_PE;
-
-export function usarMateria(materia) {
-  const c = CONTENIDO[materia] || CONTENIDO.PE;
-  TEMAS = c.TEMAS;
-  PREGUNTAS = c.PREGUNTAS;
+// { materia, TEMAS, PREGUNTAS } de una materia; una clave desconocida cae en PE.
+export function contenidoDe(materia) {
+  const id = Object.hasOwn(CONTENIDO, materia) ? materia : "PE";
+  return { materia: id, ...CONTENIDO[id] };
 }

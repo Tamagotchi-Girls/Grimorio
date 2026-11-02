@@ -1,6 +1,6 @@
 import Codigo from "./Codigo.jsx";
 import Bocadillo from "./Bocadillo.jsx";
-import { TEMAS } from "../data/contenido.js";
+import { useContenido } from "../data/ContenidoContext.jsx";
 
 const TIPOS = {
   concepto: "Concepto",
@@ -11,6 +11,7 @@ const TIPOS = {
 
 // Muestra un reactivo. Si `revelar` es true, colorea la correcta y la elegida y muestra la explicación.
 export default function Reactivo({ reactivo, seleccion, onElegir, revelar, mostrarTema = false }) {
+  const { TEMAS } = useContenido();
   const tema = TEMAS.find(t => t.id === reactivo.tema);
   const mono = reactivo.tipo === "imprime" || reactivo.tipo === "completa";
   return (
