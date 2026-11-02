@@ -3,7 +3,7 @@ import Escena from "../components/Escena.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 import Sprite from "../components/Sprite.jsx";
 import { TEMAS } from "../data/contenido.js";
-import { XP_POR_NIVEL } from "../lib/progreso.js";
+import { XP_POR_NIVEL } from "../lib/nivel.js";
 
 const FRASES = [
   "Que la magia de tus apuntadores nunca apunte a NULL.",
@@ -17,7 +17,7 @@ export default function Inicio({ prog, ir, perfil, materia, onMateria }) {
   const h = new Date().getHours();
   const saludo = h < 12 ? "¡Buenos días!" : h < 19 ? "¡Buenas tardes!" : "¡Buenas noches!";
   const frase = useMemo(() => FRASES[Math.floor(Math.random() * FRASES.length)], []);
-  const temasDominados = TEMAS.filter(t => prog.estadoTema(t.id).every(e => e === "ok")).length;
+  const temasDominados = TEMAS.filter(t => prog.resumenTema(t.id).completo).length;
   const ultimo = prog.datos.simulacros.at(-1);
 
   return (

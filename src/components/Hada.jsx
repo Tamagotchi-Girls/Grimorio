@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useMovimientoReducido } from "../lib/movimiento.js";
 
 export const HADAS = [
   { id: "riley", nombre: "Riley", elemento: "tierra", paisaje: "Bosque de cristal" },
@@ -33,15 +34,12 @@ const SECUENCIAS = {
   nivel: [["ataque", 500], ["especial", 700], ["reposo", 300]],
 };
 
-const reducido = () => {
-  try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { return false; }
-};
-
 const ruta = (nombre, frame, doble = false) =>
   `/sprites/hadas/${nombre}/${nombre}_${ARCHIVOS[frame]}${doble ? "@2x" : ""}.png`;
 
 export default function Hada({ nombre = "riley", secuencia = "reposo", className = "", alt = "", doble = false }) {
   const hada = normalizarHada(nombre);
+  const reducido = useMovimientoReducido();
   const pasos = useMemo(() => SECUENCIAS[secuencia] || SECUENCIAS.reposo, [secuencia]);
   const [frame, setFrame] = useState("reposo");
 
@@ -50,7 +48,7 @@ export default function Hada({ nombre = "riley", secuencia = "reposo", className
   }, [hada, doble]);
 
   useEffect(() => {
-    if (reducido()) { setFrame("reposo"); return; }
+    if (reducido) { setFrame("reposo"); return; }
     let cancelado = false;
     let timer;
     let indice = 0;
@@ -72,7 +70,7 @@ export default function Hada({ nombre = "riley", secuencia = "reposo", className
     };
     avanzar();
     return () => { cancelado = true; clearTimeout(timer); };
-  }, [pasos, secuencia, hada]);
+  }, [pasos, secuencia, hada, reducido]);
 
   return (
     <img

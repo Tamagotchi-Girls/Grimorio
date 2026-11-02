@@ -1,5 +1,6 @@
 import { TEMAS } from "../data/contenido.js";
 import Escena from "../components/Escena.jsx";
+import { dosDigitos } from "../lib/formato.js";
 
 export default function Temas({ prog, ir, perfil }) {
   return (
@@ -15,18 +16,18 @@ export default function Temas({ prog, ir, perfil }) {
       <div className="temas-grid">
         {TEMAS.map(t => {
           const est = prog.estadoTema(t.id);
-          const ok = est.filter(e => e === "ok").length;
+          const { ok, total, completo } = prog.resumenTema(t.id);
           return (
-            <button key={t.id} className={`tema-card px ${ok === est.length ? "completo" : ""}`} onClick={() => ir(`tema/${t.id}`)}>
+            <button key={t.id} className={`tema-card px ${completo ? "completo" : ""}`} onClick={() => ir(`tema/${t.id}`)}>
               <span className="tema-cursor" aria-hidden="true">▶</span>
-              <span className="tema-num">{String(t.id).padStart(2, "0")}</span>
+              <span className="tema-num">{dosDigitos(t.id)}</span>
               <span className="tema-info">
                 <b>{t.nombre}</b>
-                <span className="pips" aria-label={`${ok} de ${est.length} dominados`}>
+                <span className="pips" aria-label={`${ok} de ${total} dominados`}>
                   {est.map((e, i) => <i key={i} className={e} />)}
                 </span>
               </span>
-              <span className="tema-ok">{ok}/{est.length}</span>
+              <span className="tema-ok">{ok}/{total}</span>
             </button>
           );
         })}

@@ -1,18 +1,8 @@
 import { useState } from "react";
 import Bocadillo from "../components/Bocadillo.jsx";
 import Escena from "../components/Escena.jsx";
-import { CONTENIDO } from "../data/contenido.js";
-import { leerProgreso } from "../lib/progreso.js";
-
-const leer = (id) => {
-  try {
-    const datos = leerProgreso(id);
-    const xp = datos.xp || 0;
-    const preguntas = CONTENIDO[id].PREGUNTAS;
-    const dominadas = preguntas.filter((p) => datos.preguntas?.[p.id]?.ultimo).length;
-    return { nivel: 1 + Math.floor(xp / 100), dominio: Math.round((dominadas / preguntas.length) * 100) };
-  } catch { return { nivel: 1, dominio: 0 }; }
-};
+import { resumenMateria } from "../lib/progreso.js";
+import { dosDigitos } from "../lib/formato.js";
 
 const MATERIAS = [
   { id: "PE", nombre: "Programación Estructurada", clave: "IL352" },
@@ -35,7 +25,7 @@ export default function Materias({ perfil, onElegir }) {
       <fieldset className="menu-materias" onKeyDown={mover}>
         <legend className="sr">Selecciona una materia</legend>
         {MATERIAS.map((m) => {
-          const p = leer(m.id);
+          const p = resumenMateria(m.id);
           return (
             <label className={`materia-menu px ${seleccion === m.id ? "seleccionada" : ""}`} key={m.id}>
               <input type="radio" name="materia" value={m.id} checked={seleccion === m.id} onChange={() => setSeleccion(m.id)} />
@@ -44,7 +34,7 @@ export default function Materias({ perfil, onElegir }) {
                 <strong>{m.nombre}</strong><small>{m.clave}</small>
                 <span className="dominio-barra" aria-label={`${p.dominio}% de dominio`}><i style={{ width: `${p.dominio}%` }} /></span>
               </span>
-              <span className="materia-nivel">LV. {String(p.nivel).padStart(2, "0")}<small>{p.dominio}%</small></span>
+              <span className="materia-nivel">LV. {dosDigitos(p.nivel)}<small>{p.dominio}%</small></span>
             </label>
           );
         })}

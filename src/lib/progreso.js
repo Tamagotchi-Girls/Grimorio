@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { PREGUNTAS } from "../data/contenido.js";
+import { CONTENIDO, PREGUNTAS } from "../data/contenido.js";
 import { claveProgreso, escribirJSON, leerJSON } from "./almacenamiento.js";
+import { XP_POR_ACIERTO, nivelDe, xpEnNivel } from "./nivel.js";
 import { LIMITES, normalizarProgreso, progresoVacio } from "./validacion.js";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
@@ -9,9 +10,6 @@ const conDia = (dias = []) => [...new Set([...dias, hoy()])].slice(-LIMITES.dias
 export const leerProgreso = (materia) => normalizarProgreso(leerJSON(claveProgreso(materia)), materia);
 
 export const guardarProgreso = (materia, datos) => escribirJSON(claveProgreso(materia), datos);
-
-export const XP_POR_ACIERTO = 10;
-export const XP_POR_NIVEL = 100;
 
 export function useProgreso(materia = "PE") {
   const [datos, setDatos] = useState(() => leerProgreso(materia));
@@ -39,8 +37,8 @@ export function useProgreso(materia = "PE") {
 
   const reiniciar = useCallback(() => setDatos(progresoVacio()), []);
 
-  const nivel = 1 + Math.floor(datos.xp / XP_POR_NIVEL);
-  const xpNivel = datos.xp % XP_POR_NIVEL;
+  const nivel = nivelDe(datos.xp);
+  const xpNivel = xpEnNivel(datos.xp);
   const dominadas = PREGUNTAS.filter(p => datos.preguntas[p.id]?.ultimo).length;
   const racha = (() => {
     const dias = new Set(datos.diasEstudio || []);
@@ -53,15 +51,31 @@ export function useProgreso(materia = "PE") {
     return Math.max(1, n);
   })();
 
-  const estadoTema = (temaId) => {
-    const ps = PREGUNTAS.filter(p => p.tema === temaId);
-    return ps.map(p => {
-      const r = datos.preguntas[p.id];
-      return !r ? "nada" : r.ultimo ? "ok" : "mal";
-    });
-  };
+  const estadoTema = (temaId) => PREGUNTAS.filter(p => p.tema === temaId).map(p => estadoPregunta(datos, p.id));
+  const resumenDeTema = (temaId) => resumenTema(datos, PREGUNTAS, temaId);
 
-  return { datos, registrar, guardarSimulacro, reiniciar, nivel, xpNivel, dominadas, racha, estadoTema };
+  return { datos, registrar, guardarSimulacro, reiniciar, nivel, xpNivel, dominadas, racha, estadoTema, resumenTema: resumenDeTema };
+}
+
+// "nada" (sin intentar), "ok" (bien la última vez) o "mal" (falló la última vez).
+const estadoPregunta = (datos, id) => {
+  const r = datos.preguntas[id];
+  return !r ? "nada" : r.ultimo ? "ok" : "mal";
+};
+
+// Cuántos reactivos del tema están bien (`ok`), cuántos tiene (`total`) y si ya están todos (`completo`).
+export function resumenTema(datos, preguntas, temaId) {
+  const delTema = preguntas.filter(p => p.tema === temaId);
+  const ok = delTema.filter(p => estadoPregunta(datos, p.id) === "ok").length;
+  return { ok, total: delTema.length, completo: ok === delTema.length };
+}
+
+// Nivel y porcentaje de dominio de una materia, leído del almacenamiento (o de `datos`, ya normalizados).
+export function resumenMateria(id, datos = leerProgreso(id)) {
+  const preguntas = CONTENIDO[id]?.PREGUNTAS ?? [];
+  const dominadas = preguntas.filter(p => datos.preguntas[p.id]?.ultimo).length;
+  const dominio = preguntas.length ? Math.round((dominadas / preguntas.length) * 100) : 0;
+  return { nivel: nivelDe(datos.xp), dominadas, total: preguntas.length, dominio };
 }
 
 // Baraja una copia (Fisher-Yates).

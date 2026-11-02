@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { PREGUNTAS, TEMAS } from "../data/contenido.js";
 import { barajar, prepararReactivo } from "../lib/progreso.js";
+import { XP_POR_ACIERTO } from "../lib/nivel.js";
+import { medallaDeSimulacro } from "../lib/medallas.js";
 import Reactivo from "../components/Reactivo.jsx";
 import Sprite from "../components/Sprite.jsx";
 import Escena from "../components/Escena.jsx";
@@ -145,16 +147,17 @@ export default function Simulacro({ prog, ir, perfil }) {
 
   // resultados
   const flojos = TEMAS.filter(t => resultado.porTema[t.id] && resultado.porTema[t.id].ok < resultado.porTema[t.id].total);
+  const medalla = medallaDeSimulacro(resultado.calificacion);
   return (
     <div className="vista">
       <div className="escena-wrap">
         <Escena hada={perfil.avatar} dia={prog.racha} secuencia="nivel" compacto />
       </div>
       <section className="final px">
-        <Sprite nombre={resultado.calificacion >= 90 ? "copa" : resultado.calificacion >= 60 ? "estrella" : "corazon"} escala={7} className={resultado.calificacion >= 90 ? "festejo" : ""} />
+        <Sprite nombre={medalla} escala={7} className={medalla === "copa" ? "festejo" : ""} />
         <p className="eyebrow">Tu calificación</p>
         <h2 className="calif">{resultado.calificacion}</h2>
-        <p>{resultado.aciertos} de {resultado.total} aciertos · +{resultado.aciertos * 10} XP</p>
+        <p>{resultado.aciertos} de {resultado.total} aciertos · +{resultado.aciertos * XP_POR_ACIERTO} XP</p>
       </section>
 
       <section className="por-tema px">

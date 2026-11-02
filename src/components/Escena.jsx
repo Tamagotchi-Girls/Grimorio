@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import Hada, { normalizarHada } from "./Hada.jsx";
+import { dosDigitos } from "../lib/formato.js";
 
 // Escala de la escena: cabe a lo ancho de su columna y deja espacio vertical para el resto de la
 // pantalla. Se redondea hacia abajo a múltiplos de 1/8 (0.25 = 1x del paisaje original, 0.5 = 2x…)
@@ -50,7 +51,7 @@ export default function Escena({ hada: hadaSolicitada, secuencia = "reposo", com
         className="escena-lienzo"
         style={{ "--paisaje": `url("/sprites/paisajes/${hada}/${hada}_paisaje_tira_4x.png")` }}
       >
-        <span className="day-tag">DAY: {String(dia).padStart(2, "0")}</span>
+        <span className="day-tag">DAY: {dosDigitos(dia)}</span>
         <Hada nombre={hada} secuencia={secuencia} className="hada-en-escena" />
       </div>
     </div>

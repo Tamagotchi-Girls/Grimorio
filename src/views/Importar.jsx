@@ -3,10 +3,11 @@ import HadaRetrato from "../components/HadaRetrato.jsx";
 import { decodificarEnlace } from "../lib/transferencia.js";
 import { guardarProgreso, leerProgreso } from "../lib/progreso.js";
 import { combinarProgreso } from "../lib/validacion.js";
+import { nivelDe } from "../lib/nivel.js";
 import Escena from "../components/Escena.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 
-const nivel = (d) => 1 + Math.floor((d?.xp || 0) / 100);
+const nivel = (d) => nivelDe(d?.xp);
 
 export default function Importar({ onListo }) {
   const datos = useMemo(decodificarEnlace, []);

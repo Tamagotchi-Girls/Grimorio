@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { PREGUNTAS, TEMAS } from "../data/contenido.js";
 import { prepararReactivo } from "../lib/progreso.js";
+import { XP_POR_ACIERTO } from "../lib/nivel.js";
+import { dosDigitos } from "../lib/formato.js";
+import { medallaDeTema } from "../lib/medallas.js";
 import Codigo from "../components/Codigo.jsx";
 import Reactivo from "../components/Reactivo.jsx";
 import Sprite from "../components/Sprite.jsx";
@@ -49,6 +52,7 @@ export default function Tema({ id, prog, ir, perfil }) {
 
   const aciertos = reactivos.filter((r, k) => respuestas[k] !== undefined && r.opcionesBarajadas[respuestas[k]].correcta).length;
   const siguienteTema = TEMAS.find(t => t.id === id + 1);
+  const medalla = medallaDeTema(aciertos, reactivos.length);
 
   return (
     <div className="vista">
@@ -62,7 +66,7 @@ export default function Tema({ id, prog, ir, perfil }) {
       </div>
       <button className="volver" onClick={() => ir("temas")}>← Temas</button>
       <section className="intro">
-        <p className="eyebrow">Tema {String(tema.id).padStart(2, "0")} de 10</p>
+        <p className="eyebrow">Tema {dosDigitos(tema.id)} de 10</p>
         <h1>{tema.nombre}</h1>
       </section>
 
@@ -99,7 +103,7 @@ export default function Tema({ id, prog, ir, perfil }) {
             </span>
           </div>
           <Reactivo key={`${ronda}-${i}`} reactivo={actual} seleccion={sel} onElegir={elegir} revelar={respondida} />
-          {respondida && actual.opcionesBarajadas[sel].correcta && <span className="xp-flotante" aria-live="polite">+10 XP</span>}
+          {respondida && actual.opcionesBarajadas[sel].correcta && <span className="xp-flotante" aria-live="polite">+{XP_POR_ACIERTO} XP</span>}
           <div className="acciones">
             <span className="ayuda">Teclas 1–4 para responder · Enter para seguir</span>
             <button className="btn px pink" disabled={!respondida} onClick={siguiente}>
@@ -111,12 +115,12 @@ export default function Tema({ id, prog, ir, perfil }) {
 
       {pestana === "practicar" && terminado && (
         <section className="final px">
-          <Sprite nombre={aciertos === reactivos.length ? "copa" : aciertos >= 4 ? "estrella" : "corazon"} escala={7} className={aciertos === reactivos.length ? "festejo" : ""} />
+          <Sprite nombre={medalla} escala={7} className={medalla === "copa" ? "festejo" : ""} />
           <h2>{aciertos} de {reactivos.length}</h2>
           <p>
-            {aciertos === reactivos.length
+            {medalla === "copa"
               ? "¡Tema dominado! Cada respuesta fue correcta."
-              : aciertos >= 4
+              : medalla === "estrella"
               ? "¡Muy bien! Revisa los apuntes de lo que fallaste y vuelve a intentarlo."
               : "Lee otra vez los apuntes con calma. La segunda vuelta siempre sale mejor."}
           </p>

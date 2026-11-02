@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TEMAS } from "../data/contenido.js";
-import { XP_POR_NIVEL } from "../lib/progreso.js";
+import { XP_POR_NIVEL } from "../lib/nivel.js";
 import HadaRetrato from "../components/HadaRetrato.jsx";
 import Transferencia from "../components/Transferencia.jsx";
 import Escena from "../components/Escena.jsx";
@@ -42,8 +42,8 @@ export default function Progreso({ prog, ir, perfil, setPerfil, materia }) {
       )}
       <section className="por-tema px"><h2 className="sub">Dominio por tema</h2>
         {TEMAS.map((t) => {
-          const est = prog.estadoTema(t.id); const ok = est.filter((e) => e === "ok").length;
-          return <button className="barra-tema link" key={t.id} onClick={() => ir(`tema/${t.id}`)}><span className="bt-nombre">{t.id}. {t.corto}</span><span className="pips" aria-label={`${ok} de ${est.length}`}>{est.map((e, i) => <i key={i} className={e} />)}</span><span className="bt-num">{ok}/{est.length}</span></button>;
+          const est = prog.estadoTema(t.id); const { ok, total } = prog.resumenTema(t.id);
+          return <button className="barra-tema link" key={t.id} onClick={() => ir(`tema/${t.id}`)}><span className="bt-nombre">{t.id}. {t.corto}</span><span className="pips" aria-label={`${ok} de ${total}`}>{est.map((e, i) => <i key={i} className={e} />)}</span><span className="bt-num">{ok}/{total}</span></button>;
         })}
       </section>
       <section className="historial px"><h2 className="sub">Historial de simulacros</h2>

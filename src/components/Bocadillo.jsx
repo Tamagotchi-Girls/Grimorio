@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import Sprite from "./Sprite.jsx";
-
-const reducido = () => {
-  try { return window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { return false; }
-};
+import { useMovimientoReducido } from "../lib/movimiento.js";
 
 // Caja de diálogo con efecto de máquina de escribir.
 export default function Bocadillo({ texto, className = "" }) {
-  const [n, setN] = useState(reducido() ? texto.length : 0);
+  const reducido = useMovimientoReducido();
+  const [n, setN] = useState(reducido ? texto.length : 0);
   useEffect(() => {
-    if (reducido()) { setN(texto.length); return; }
+    if (reducido) { setN(texto.length); return; }
     setN(0);
     const id = setInterval(() => {
       setN(v => {
@@ -18,7 +16,7 @@ export default function Bocadillo({ texto, className = "" }) {
       });
     }, 28);
     return () => clearInterval(id);
-  }, [texto]);
+  }, [texto, reducido]);
   return (
     <div className={"bocadillo px " + className} aria-live="polite">
       <p>
