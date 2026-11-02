@@ -1,20 +1,8 @@
 # Pendientes por fase
 
 Cosas que se decidió dejar para una fase posterior. Cada una dice dónde está el problema y cómo
-comprobar que quedó resuelto. Al terminar un pendiente, bórralo de aquí en el mismo commit que lo arregla.
-
-## Fase 7
-
-### ✅ HECHO (fase 7) · `#/importar?d=…` también debe funcionar si se cambia el hash sin recargar
-
-- **Qué pasa hoy:** `App` (`src/AppRoot.jsx`) calcula `importar = leerRuta() === "importar"` solo al
-  renderizar, y únicamente `Aplicacion` escucha `hashchange`. Si la app ya está abierta y se pega el
-  enlace en la misma pestaña (cambia el hash, no recarga), no se abre la importación hasta recargar.
-  Abrir el enlace en una pestaña nueva sí funciona, que es el uso real.
-- **Qué hacer:** que la ruta viva en un solo lugar que escuche `hashchange` también en `App`.
-- **Cómo comprobarlo:** una prueba e2e que cambie el hash a `#/importar?d=…` sin recargar y vea la pantalla
-  de importación. En `tests/e2e/e2e.mjs`, `abrirEnlace` hace `reload()` justamente por este problema; al
-  arreglarlo se puede quitar ese rodeo.
+comprobar que quedó resuelto. Al terminar un pendiente, muévelo a la sección "Hecho" del final, con la
+fecha y el commit que lo resolvió.
 
 ## Después de la fase 6 (accesibilidad)
 
@@ -27,5 +15,12 @@ comprobar que quedó resuelto. Al terminar un pendiente, bórralo de aquí en el
   devolver el foco al botón que lo abrió. Decidir si "borrar progreso" también es `alertdialog`.
 - **Cómo comprobarlo:** ampliar las pruebas F de `tests/e2e/e2e.mjs` (F4 hoy fija el orden Cancelar → Confirmar).
 
-- **Resuelto en la fase 7:** la ruta se lee y escucha en un solo lugar (`useRuta`, `src/lib/ruta.js`) y `App` deriva de
-  ahí si está en importar. `abrirEnlace` del e2e ya no recarga; la prueba G7 cambia el hash sin recargar.
+## Hecho
+
+### `#/importar?d=…` también funciona si se cambia el hash sin recargar
+
+- **Fecha y commit:** 2026-11-02 · resuelto en `3eecfc9` (AppRoot usa `useRuta`); pruebas en `8a1ec88`.
+- **Qué era:** `App` calculaba `importar` solo al renderizar y únicamente `Aplicacion` escuchaba `hashchange`, así que
+  pegar el enlace en la misma pestaña no abría la importación hasta recargar.
+- **Cómo quedó:** la ruta se lee y escucha en un solo lugar (`useRuta`, `src/lib/ruta.js`) y `App` deriva de ahí si
+  está en importar. `abrirEnlace` del e2e ya no recarga; la prueba G7 cambia el hash sin recargar.
