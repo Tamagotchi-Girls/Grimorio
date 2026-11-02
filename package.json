@@ -12,6 +12,7 @@
     "test": "vitest run",
     "verificar": "vitest run src/data/imprime.gcc.test.js",
     "capturas": "node scripts/capturas.mjs",
+    "e2e": "node tests/e2e/e2e.mjs",
     "tunel": "cloudflared tunnel --url http://localhost:8443"
   },
   "dependencies": {
