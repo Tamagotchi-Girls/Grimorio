@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import ZonaEscena from "../components/ZonaEscena.jsx";
 import Encabezado from "../components/Encabezado.jsx";
 import Stat from "../components/Stat.jsx";
@@ -8,6 +8,7 @@ import { useContenido } from "../data/ContenidoContext.jsx";
 import { materiaPorId } from "../data/materias.js";
 import { textoCaminoSimulacro, textoCaminoTemas, textoResumenMateria, textoTemasCompletos } from "../lib/conteos.js";
 import { XP_POR_NIVEL } from "../lib/nivel.js";
+import { saludoSegunHora } from "../lib/saludo.js";
 
 const FRASES = [
   "Que la magia de tus apuntadores nunca apunte a NULL.",
@@ -19,8 +20,8 @@ const FRASES = [
 
 export default function Inicio({ prog, ir, perfil, materia, onMateria }) {
   const { TEMAS, PREGUNTAS } = useContenido();
-  const h = new Date().getHours();
-  const saludo = h < 12 ? "¡Buenos días!" : h < 19 ? "¡Buenas tardes!" : "¡Buenas noches!";
+  // la hora se lee una vez, al abrir la pantalla (no en cada render)
+  const [saludo] = useState(() => saludoSegunHora(new Date()));
   const frase = useMemo(() => FRASES[Math.floor(Math.random() * FRASES.length)], []);
   const temasDominados = TEMAS.filter(t => prog.resumenTema(t.id).completo).length;
   const ultimo = prog.datos.simulacros.at(-1);

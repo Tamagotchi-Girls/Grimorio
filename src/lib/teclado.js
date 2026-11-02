@@ -7,3 +7,6 @@ export function indiceDeTecla(tecla, totalOpciones) {
 }
 
 export const textoTeclas = (totalOpciones) => `Teclas 1–${totalOpciones} para responder`;
+
+// ¿El evento viene de un campo donde se escribe (o de un radio de opciones)? Tema ignora las teclas ahí.
+export const enCampo = (e) => !!(e.target.closest && e.target.closest("input, textarea"));

@@ -9,7 +9,21 @@ import { MAX_DIAS_RACHA, MAX_SIMULACROS } from "./constantes.js";
 const hoy = () => new Date().toISOString().slice(0, 10);
 const conDia = (dias = []) => [...new Set([...dias, hoy()])].slice(-MAX_DIAS_RACHA);
 
-export const leerProgreso = (materia) => normalizarProgreso(leerJSON(claveProgreso(materia)), materia);
+// Progreso después de responder cada [id, acierto] de `lista`, en orden: suma el XP de los aciertos, cuenta intentos
+// y aciertos por reactivo, y añade hoy a los días de estudio. No modifica `datos`.
+export function registrarRespuestas(datos, lista) {
+  if (lista.length === 0) return datos;
+  const preguntas = { ...datos.preguntas };
+  let xp = datos.xp;
+  for (const [id, acierto] of lista) {
+    const prev = preguntas[id] || { intentos: 0, aciertos: 0 };
+    xp += acierto ? XP_POR_ACIERTO : 0;
+    preguntas[id] = { intentos: prev.intentos + 1, aciertos: prev.aciertos + (acierto ? 1 : 0), ultimo: acierto };
+  }
+  return { ...datos, xp, diasEstudio: conDia(datos.diasEstudio), preguntas };
+}
+
+export const leerProgreso =(materia) => normalizarProgreso(leerJSON(claveProgreso(materia)), materia);
 
 export const guardarProgreso = (materia, datos) => escribirJSON(claveProgreso(materia), datos);
 
@@ -28,20 +42,10 @@ export function useProgreso() {
 
   useEffect(() => { guardarProgreso(materia, datos); }, [datos, materia]);
 
-  const registrar = useCallback((id, acierto) => {
-    setDatos(d => {
-      const prev = d.preguntas[id] || { intentos: 0, aciertos: 0 };
-      return {
-        ...d,
-        xp: d.xp + (acierto ? XP_POR_ACIERTO : 0),
-        diasEstudio: conDia(d.diasEstudio),
-        preguntas: {
-          ...d.preguntas,
-          [id]: { intentos: prev.intentos + 1, aciertos: prev.aciertos + (acierto ? 1 : 0), ultimo: acierto }
-        }
-      };
-    });
-  }, [setDatos]);
+  const registrar = useCallback((id, acierto) => setDatos(d => registrarRespuestas(d, [[id, acierto]])), [setDatos]);
+
+  // Varias respuestas de golpe ([[id, acierto], …]): una sola actualización del progreso (p. ej. al terminar un simulacro).
+  const registrarVarias = useCallback((lista) => setDatos(d => registrarRespuestas(d, lista)), [setDatos]);
 
   const guardarSimulacro = useCallback((resultado) => {
     setDatos(d => ({ ...d, diasEstudio: conDia(d.diasEstudio), simulacros: [...d.simulacros, resultado].slice(-MAX_SIMULACROS) }));
@@ -66,7 +70,7 @@ export function useProgreso() {
   const estadoTema = (temaId) => PREGUNTAS.filter(p => p.tema === temaId).map(p => estadoPregunta(datos, p.id));
   const resumenDeTema = (temaId) => resumenTema(datos, PREGUNTAS, temaId);
 
-  return { datos, registrar, guardarSimulacro, reiniciar, nivel, xpNivel, dominadas, racha, estadoTema, resumenTema: resumenDeTema };
+  return { datos, registrar, registrarVarias, guardarSimulacro, reiniciar, nivel, xpNivel, dominadas, racha, estadoTema, resumenTema: resumenDeTema };
 }
 
 // "nada" (sin intentar), "ok" (bien la última vez) o "mal" (falló la última vez).
