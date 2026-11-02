@@ -47,6 +47,11 @@ const carpetaBase = opcion("base");
 const filtro = opcion("solo");
 const MOVIMIENTO = args.includes("--movimiento");
 const INSTANTE_ANIMACION = 650; // ms en los que se congelan las animaciones CSS en modo --movimiento
+// ms que avanza el reloj pausado: tras cargar (máquina de escribir y secuencias del hada) y tras los pasos de cada
+// pantalla. Son 500 y 150 más que cuando el reloj corría solo: ese tiempo real "de regalo" es el que fijaba los
+// fotogramas de la base (mov-base), así que se pide de forma explícita para que no cambie.
+const AVANCE_INICIAL = 6500;
+const AVANCE_TRAS_PASOS = 650;
 const PUERTO = Number(opcion("puerto")) || 4173;
 const URL_APP = `http://127.0.0.1:${PUERTO}`;
 
@@ -379,10 +384,10 @@ async function capturarPantalla(contexto, pantalla, vp, modo, destino, animacion
     const ruta = pantalla.hash === null ? enlaceImportar() : `/#${pantalla.hash}`;
     await page.goto(URL_APP + ruta, { waitUntil: MOVIMIENTO ? "load" : "networkidle" });
     if (MOVIMIENTO) await page.addStyleTag({ content: PAUSAR_ANIMACIONES });
-    await estabilizar(page, 6000);
+    await estabilizar(page, AVANCE_INICIAL);
     if (pantalla.pasos) {
       await pantalla.pasos(page);
-      await estabilizar(page, 500);
+      await estabilizar(page, AVANCE_TRAS_PASOS);
     }
     const base = `${pantalla.nombre}__${vp.nombre}__${modo}`;
     if (MOVIMIENTO) animaciones[`${base}.png`] = await congelarAnimaciones(page, INSTANTE_ANIMACION);
@@ -508,9 +513,13 @@ async function main() {
           colorScheme: modo === "oscuro" ? "dark" : "light",
           reducedMotion: MOVIMIENTO ? "no-preference" : "reduce",
         });
-        // con movimiento el reloj es falso y solo avanza cuando el script lo manda
-        if (MOVIMIENTO) await contexto.clock.install({ time: AHORA });
-        else await contexto.clock.setFixedTime(AHORA);
+        // con movimiento el reloj es falso y SE PAUSA: tras `install` seguiría corriendo en tiempo real, y los
+        // milisegundos reales que tardan en montar la página se sumarían a la animación (el fotograma del hada al
+        // capturar cambiaría de una corrida a otra). Pausado, solo avanza cuando el script lo manda.
+        if (MOVIMIENTO) {
+          await contexto.clock.install({ time: AHORA });
+          await contexto.clock.pauseAt(new Date(AHORA.getTime() + 1000));
+        } else await contexto.clock.setFixedTime(AHORA);
         for (const pantalla of pantallas) {
           try {
             await capturarPantalla(contexto, pantalla, vp, modo, destino, animaciones);
