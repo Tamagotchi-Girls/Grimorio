@@ -11,14 +11,22 @@ import Materias from "./views/Materias.jsx";
 import Importar from "./views/Importar.jsx";
 import ElegirHada from "./views/ElegirHada.jsx";
 import { useProgreso } from "./lib/progreso.js";
-import { PREGUNTAS, usarMateria } from "./data/contenido.js";
+import { CONTENIDO, PREGUNTAS, usarMateria } from "./data/contenido.js";
+import { normalizarPerfil } from "./lib/validacion.js";
 import Bocadillo from "./components/Bocadillo.jsx";
 import Hada from "./components/Hada.jsx";
 import AvisoAlmacenamiento from "./components/AvisoAlmacenamiento.jsx";
 import { CLAVES, escribirJSON, escribirTexto, leerJSON, leerTexto, quitar } from "./lib/almacenamiento.js";
 
 const leerRuta = () => location.hash.replace(/^#\/?/, "").split("?")[0] || "";
-const temaInicial = () => leerTexto(CLAVES.tema) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+const temaInicial = () => {
+  const guardado = leerTexto(CLAVES.tema);
+  return guardado === "dark" || guardado === "light" ? guardado : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
+const materiaGuardada = () => {
+  const m = leerTexto(CLAVES.materiaActiva);
+  return Object.hasOwn(CONTENIDO, m) ? m : null;
+};
 
 function Aplicacion({ perfil, setPerfil, materia, setMateria }) {
   usarMateria(materia);
@@ -58,7 +66,7 @@ function Aplicacion({ perfil, setPerfil, materia, setMateria }) {
     textoListo="¡LISTO!"
     textoVolver="◀ CANCELAR"
     onVolver={() => ir("")}
-    onElegir={(id) => { setPerfil({ ...perfil, avatar: id, hada: id }); ir(""); }}
+    onElegir={(id) => { setPerfil({ ...perfil, avatar: id }); ir(""); }}
   />;
   else if (base === "progreso") vista = <Progreso prog={prog} ir={ir} perfil={perfil} setPerfil={setPerfil} materia={materia} />;
   else vista = <Inicio prog={prog} ir={ir} perfil={perfil} materia={materia} onMateria={cambiarMateria} />;
@@ -77,13 +85,13 @@ function Aplicacion({ perfil, setPerfil, materia, setMateria }) {
 }
 
 export default function App() {
-  const [perfil, setPerfilState] = useState(() => leerJSON(CLAVES.perfil));
-  const [materia, setMateriaState] = useState(() => leerTexto(CLAVES.materiaActiva));
-  const [seleccionando, setSeleccionando] = useState(() => !leerTexto(CLAVES.materiaActiva));
+  const [perfil, setPerfilState] = useState(() => normalizarPerfil(leerJSON(CLAVES.perfil)));
+  const [materia, setMateriaState] = useState(materiaGuardada);
+  const [seleccionando, setSeleccionando] = useState(() => !materiaGuardada());
   const [temaPrevio, setTemaPrevio] = useState(temaInicial);
   const importar = leerRuta() === "importar";
   useEffect(() => document.documentElement.setAttribute("data-theme", temaPrevio), [temaPrevio]);
-  const setPerfil = (p) => { setPerfilState(p); escribirJSON(CLAVES.perfil, p); };
+  const setPerfil = (p) => { const limpio = normalizarPerfil(p); setPerfilState(limpio); if (limpio) escribirJSON(CLAVES.perfil, limpio); };
   const elegir = (m) => { setMateriaState(m); setSeleccionando(false); escribirTexto(CLAVES.materiaActiva, m); location.hash = "/"; };
   const abrirSelector = () => { setMateriaState(null); setSeleccionando(true); };
   const previo = importar || !perfil || seleccionando || !materia;

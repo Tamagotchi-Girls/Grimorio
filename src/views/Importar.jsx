@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import HadaRetrato from "../components/HadaRetrato.jsx";
 import { decodificarEnlace } from "../lib/transferencia.js";
 import { guardarProgreso, leerProgreso } from "../lib/progreso.js";
+import { combinarProgreso } from "../lib/validacion.js";
 import Escena from "../components/Escena.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 
@@ -15,15 +16,8 @@ export default function Importar({ onListo }) {
   );
   const guardar = (modo) => {
     ["PE", "FP"].forEach((id) => {
-      const entrante = datos.progreso[id] || {};
-      if (modo === "reemplazar") guardarProgreso(id, entrante);
-      else {
-        const local = leerProgreso(id);
-        const preguntas = { ...local.preguntas, ...entrante.preguntas };
-        const simulacros = [...local.simulacros, ...(entrante.simulacros || [])].slice(-10);
-        const diasEstudio = [...new Set([...local.diasEstudio, ...(entrante.diasEstudio || [])])].slice(-90);
-        guardarProgreso(id, { xp: Math.max(local.xp || 0, entrante.xp || 0), preguntas, simulacros, diasEstudio });
-      }
+      const entrante = datos.progreso[id];
+      guardarProgreso(id, modo === "reemplazar" ? entrante : combinarProgreso(leerProgreso(id), entrante, id));
     });
     onListo(datos.perfil);
   };

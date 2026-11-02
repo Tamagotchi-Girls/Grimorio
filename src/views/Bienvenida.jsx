@@ -32,7 +32,7 @@ export default function Bienvenida({ onContinuar }) {
   return (
     <ElegirHada
       inicial={hada}
-      onElegir={(id) => { setHada(id); onContinuar({ nombre: nombre.trim().slice(0, 32), avatar: id, hada: id }); }}
+      onElegir={(id) => { setHada(id); onContinuar({ nombre: nombre.trim().slice(0, 32), avatar: id }); }}
       onVolver={() => setPaso("nombre")}
     />
   );

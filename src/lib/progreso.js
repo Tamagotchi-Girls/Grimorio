@@ -1,15 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { PREGUNTAS } from "../data/contenido.js";
 import { claveProgreso, escribirJSON, leerJSON } from "./almacenamiento.js";
+import { LIMITES, normalizarProgreso, progresoVacio } from "./validacion.js";
 
-const VACIO = { xp: 0, preguntas: {}, simulacros: [], diasEstudio: [] };
 const hoy = () => new Date().toISOString().slice(0, 10);
-const conDia = (dias = []) => [...new Set([...dias, hoy()])].slice(-90);
+const conDia = (dias = []) => [...new Set([...dias, hoy()])].slice(-LIMITES.diasEstudio);
 
-export function leerProgreso(materia) {
-  const d = leerJSON(claveProgreso(materia));
-  return d ? { ...VACIO, ...d } : VACIO;
-}
+export const leerProgreso = (materia) => normalizarProgreso(leerJSON(claveProgreso(materia)), materia);
 
 export const guardarProgreso = (materia, datos) => escribirJSON(claveProgreso(materia), datos);
 
@@ -37,10 +34,10 @@ export function useProgreso(materia = "PE") {
   }, []);
 
   const guardarSimulacro = useCallback((resultado) => {
-    setDatos(d => ({ ...d, diasEstudio: conDia(d.diasEstudio), simulacros: [...d.simulacros, resultado].slice(-10) }));
+    setDatos(d => ({ ...d, diasEstudio: conDia(d.diasEstudio), simulacros: [...d.simulacros, resultado].slice(-LIMITES.simulacros) }));
   }, []);
 
-  const reiniciar = useCallback(() => setDatos(VACIO), []);
+  const reiniciar = useCallback(() => setDatos(progresoVacio()), []);
 
   const nivel = 1 + Math.floor(datos.xp / XP_POR_NIVEL);
   const xpNivel = datos.xp % XP_POR_NIVEL;
