@@ -1,6 +1,7 @@
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import Aparato from "./Aparato.jsx";
 import BarraXP from "./BarraXP.jsx";
 import Confirmar from "./Confirmar.jsx";
 import CursorMenu from "./CursorMenu.jsx";
@@ -127,5 +128,26 @@ describe("CursorMenu", () => {
   it("flechita decorativa con la clase del menú", () => {
     expect(html(h(CursorMenu, { clase: "menu-cursor" }))).toBe('<span class="menu-cursor" aria-hidden="true">▶</span>');
     expect(html(h(CursorMenu, { clase: "tema-cursor" }))).toBe('<span class="tema-cursor" aria-hidden="true">▶</span>');
+  });
+});
+
+describe("Aparato", () => {
+  const barra = { nivel: 2, dominadas: 0, total: 60, tema: "light", onTema() {}, materia: "PE", onMateria() {} };
+  const salida = (props) => renderToStaticMarkup(h(Aparato, { barra, ...props }, h("p", null, "hola")));
+  it("dibuja barra, pantalla, navegación y pie, en ese orden, dentro de .aparato", () => {
+    const s = salida({ id: "contenido" });
+    expect(s.startsWith('<div class="aparato"><header class="estado">')).toBe(true);
+    expect(s).toContain('<main class="pantalla" id="contenido"><p>hola</p></main><nav class="nav" aria-label="Secciones">');
+    expect(s.endsWith('</nav></div><footer class="pie"><span aria-hidden="true">✦</span> tamagotchigirls 2026</footer>')).toBe(true);
+    expect(s.match(/<header /g)).toHaveLength(1);
+    expect(s.match(/<footer /g)).toHaveLength(1);
+  });
+  it("`sola` añade pantalla-sola y `bloqueada` desactiva la navegación", () => {
+    const s = salida({ sola: true, bloqueada: true });
+    expect(s).toContain('<main class="pantalla pantalla-sola">');
+    expect(s.match(/<button class="nav-btn[^>]*disabled=""/g)).toHaveLength(4);
+  });
+  it("la superposición va antes de la barra", () => {
+    expect(salida({ superposicion: h("div", { className: "level-up" }) })).toContain('<div class="aparato"><div class="level-up"></div><header');
   });
 });
