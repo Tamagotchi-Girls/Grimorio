@@ -62,7 +62,7 @@ function Aplicacion({ perfil, setPerfil, materia, setMateria }) {
     onElegir={(id) => { setPerfil({ ...perfil, avatar: id, hada: id }); ir(""); }}
   />;
   else if (base === "progreso") vista = <Progreso prog={prog} ir={ir} perfil={perfil} setPerfil={setPerfil} materia={materia} />;
-  else vista = <Inicio prog={prog} ir={ir} noche={tema === "dark"} perfil={perfil} materia={materia} onMateria={cambiarMateria} />;
+  else vista = <Inicio prog={prog} ir={ir} perfil={perfil} materia={materia} onMateria={cambiarMateria} />;
   return <>
     {levelUp && <div className="level-up" role="status" aria-live="polite">
       <div className="level-up-flash" />
@@ -73,7 +73,7 @@ function Aplicacion({ perfil, setPerfil, materia, setMateria }) {
     </div>}
     <BarraEstado nivel={prog.nivel} dominadas={prog.dominadas} total={PREGUNTAS.length} tema={tema} onTema={cambiarTema} materia={materia} onMateria={cambiarMateria} />
     <main className="pantalla" id="contenido">{vista}</main>
-    <Navegacion ruta={ruta} ir={ir} hada={perfil.avatar} />
+    <Navegacion ruta={ruta} ir={ir} />
   </>;
 }
 
@@ -101,7 +101,7 @@ export default function App() {
           : !perfil ? <main className="pantalla pantalla-sola"><Bienvenida onContinuar={(p) => { setPerfil(p); setSeleccionando(true); }} /></main>
           : seleccionando || !materia ? <main className="pantalla pantalla-sola"><Materias perfil={perfil} onElegir={elegir} /></main>
           : <Aplicacion key={materia} perfil={perfil} setPerfil={setPerfil} materia={materia} setMateria={abrirSelector} />}
-        {previo && <Navegacion ruta="" ir={() => {}} hada={perfil?.avatar || "riley"} bloqueada />}
+        {previo && <Navegacion ruta="" ir={() => {}} bloqueada />}
       </div>
       <footer className="pie"><span aria-hidden="true">✦</span> tamagotchigirls 2026</footer>
     </div>

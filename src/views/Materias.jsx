@@ -28,7 +28,7 @@ export default function Materias({ perfil, onElegir }) {
   return (
     <div className="vista selector-materia">
       <div className="escena-wrap">
-        <Escena avatar={perfil.avatar} />
+        <Escena hada={perfil.avatar} />
       <Bocadillo className="bocadillo-escena" texto={`Hola, ${perfil.nombre}. ¿Para qué departamental vas a estudiar?`} />
       </div>
       <fieldset className="menu-materias" onKeyDown={mover}>

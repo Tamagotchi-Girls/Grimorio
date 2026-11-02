@@ -9,6 +9,9 @@ export const HADAS = [
   { id: "onyx", nombre: "Onyx", elemento: "sombra", paisaje: "Bosque de sombras" },
 ];
 
+// El id puede venir de localStorage o de un enlace de importación: si no existe, se usa riley.
+export const normalizarHada = (id) => (HADAS.some((h) => h.id === id) ? id : "riley");
+
 const ARCHIVOS = {
   reposo: "00_reposo",
   reposo_b: "01_reposo_b",
@@ -38,7 +41,7 @@ const ruta = (nombre, frame, doble = false) =>
   `/sprites/hadas/${nombre}/${nombre}_${ARCHIVOS[frame]}${doble ? "@2x" : ""}.png`;
 
 export default function Hada({ nombre = "riley", secuencia = "reposo", className = "", alt = "", doble = false }) {
-  const hada = HADAS.some((h) => h.id === nombre) ? nombre : "riley";
+  const hada = normalizarHada(nombre);
   const pasos = useMemo(() => SECUENCIAS[secuencia] || SECUENCIAS.reposo, [secuencia]);
   const [frame, setFrame] = useState("reposo");
 

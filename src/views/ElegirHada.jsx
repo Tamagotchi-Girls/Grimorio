@@ -1,12 +1,12 @@
 import { useState } from "react";
 import Bocadillo from "../components/Bocadillo.jsx";
 import Escena from "../components/Escena.jsx";
-import Hada, { HADAS } from "../components/Hada.jsx";
+import Hada, { HADAS, normalizarHada } from "../components/Hada.jsx";
 
 // Pantalla "Elige tu hada": se usa en la bienvenida y cada vez que el alumno quiere cambiar de hada.
 // El fondo cambia al paisaje del hada que tiene el foco.
 export default function ElegirHada({ inicial = "riley", onElegir, onVolver, textoVolver = "◀ ATRÁS", textoListo = "¡COMENZAR!" }) {
-  const [hada, setHada] = useState(HADAS.some((h) => h.id === inicial) ? inicial : "riley");
+  const [hada, setHada] = useState(() => normalizarHada(inicial));
   const elegida = HADAS.find((h) => h.id === hada);
 
   const enviar = (e) => {
@@ -17,7 +17,7 @@ export default function ElegirHada({ inicial = "riley", onElegir, onVolver, text
   return (
     <div className="vista elegir-hada">
       <div className="escena-wrap">
-        <Escena avatar={hada} secuencia="seleccion_activa" />
+        <Escena hada={hada} secuencia="seleccion_activa" />
       <Bocadillo className="bocadillo-escena" texto={`Soy ${elegida.nombre}, hada de ${elegida.elemento}. Mi hogar es el ${elegida.paisaje}. ¿Estudiamos juntas?`} />
       </div>
       <form onSubmit={enviar}>

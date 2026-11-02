@@ -1,173 +1,16 @@
 // Sprites pixel art dibujados a mano. Cada letra es un color (ver PALETA); "." es transparente.
 export const PALETA = {
   k: "var(--line)",
-  p: "var(--lav-d)",
   P: "var(--lav)",
   r: "var(--pink)",
   R: "var(--pink-d)",
   g: "var(--mint)",
   G: "var(--mint-d)",
-  s: "var(--skin)",
   w: "var(--white)",
-  y: "var(--gold)",
-  c: "var(--cloud)"
-  ,b: "#8b4d3b"
-  ,B: "#4b2c45"
-  ,o: "#e98255"
-  ,u: "#64b8df"
-  ,a: "#8fe1dc"
-  ,d: "#9b6048"
+  y: "var(--gold)"
 };
 
 export const SPRITES = {
-  magaLuna: [
-    ".........kk.............",
-    "........kpk..............",
-    ".......kppk..............",
-    "......kppppk.............",
-    ".....kpppyppk............",
-    "....kppppppppk...........",
-    "..kkkppppppppkkk.........",
-    ".kppppppppppppppk........",
-    "..kkkkkRRRRkkkkk.........",
-    "....kGGGGGGk.............",
-    "...kGssssssGk......k.....",
-    "..kGGskssksGGk....kyk....",
-    "..kGGssssssGGk...kyyk....",
-    "..kGGsrssrsGGk..krrk.....",
-    "...kGssssssGk..krrk......",
-    "....kkkPPkkk...kkk.......",
-    "...kppPPPPppk............",
-    "..kpppPyyPpppk...........",
-    "..kppPPPPPPppk...........",
-    "..kppPPPPPPppk...........",
-    "...kpPP..PPpk............",
-    "...kPPk..kPPk............",
-    "..kpppk..kpppk...........",
-    "..kkkk....kkkk............"
-  ],
-  magaAmara: [
-    ".......kkkkkk.............",
-    ".....kkbbbbbbkk...........",
-    "....kbbbyybbbbk...........",
-    "...kbbbbbbbbbbbk..........",
-    "..kbbbbbbbbbbbbbk.........",
-    "..kbbddddddddbbk..........",
-    ".kbbbddkddkddbbbk.........",
-    ".kbbbddddddddbbbk.........",
-    ".kbbbddRddRddbbbk.........",
-    ".kbbbddddddddbbbk.........",
-    ".kbbbbkddddkbbbbk.........",
-    ".kbbbbkkkkkkbbbbk.........",
-    ".kbbbkkggggkkbbbk.........",
-    "..kbbkggggggkbbk..........",
-    "...kkgggyygggkk...........",
-    "....kggggggggk............",
-    "...kggggggggggk...........",
-    "..kggggggggggggk..........",
-    "..kgggkggggkgggk..........",
-    "...kkk.kggk.kkk...........",
-    "......kggggk..............",
-    ".....kGgyygGk.............",
-    ".....kGGGGGGk.............",
-    "......kkkkkk.............."
-  ],
-  magoLeo: [
-    ".......kkkkkk.............",
-    ".....kkBBBBBBkk...........",
-    "....kBBuuuuBBBBk..........",
-    "...kBBuuuuuuBBBBk.........",
-    "...kBBddddddBBBBk.........",
-    "..kBBBddkddkddBBk.........",
-    "..kBBBddddddddBBk.........",
-    "..kBBBddRddRddBBk.........",
-    "...kBBddddddBBBk..........",
-    "....kkkddddkkk............",
-    "...kppkPPPPkppk...........",
-    "..kpppkPPPPkpppk..........",
-    ".kppppkPyyPkppppk.........",
-    ".kppppkPPPPkppppk.........",
-    "..kpppPPPPPPpppk..........",
-    "...kppPPPPPPppk...........",
-    "...kppPPPPPPppk...........",
-    "...kppkPPPPkppk...........",
-    "...kppk....kppk...........",
-    "...kPPk....kPPk...........",
-    "..kPPPpk..kpPPPk..........",
-    "..kkkkkk..kkkkkk..........",
-    "....k........k............",
-    "...kk........kk..........."
-  ],
-  magoKai: [
-    "......kkkkkkkk............",
-    ".....kyyyyyyyyk...........",
-    "....kyyyyyyyyyyk..........",
-    "...kyyyyyyyyyyyyk.........",
-    "...kyyyssssssyyyk.........",
-    "..kyyysskssksyyykk........",
-    "..kyyysssssssyykak........",
-    "..kyyysrssrsyykak.........",
-    "...kyyyssssyyykak.........",
-    "....kkksssskkk.kak.........",
-    "...kGGkaaakGGk.kak.........",
-    "..kGGGkaaakGGGkkak.........",
-    ".kGGGGkayakGGGGkak.........",
-    ".kGGGGkaaakGGGGkk..........",
-    "..kGGGkaaakGGGk............",
-    "...kGGaaaaaGGk.............",
-    "...kGGaaaaaGGk.............",
-    "...kGGkaaakGGk.............",
-    "...kGGk...kGGk.............",
-    "...kGGk...kGGk.............",
-    "..kGGGk...kGGGk............",
-    "..kkkkk...kkkkk............",
-    "....kk.....kk..............",
-    "...kk.......kk............."
-  ],
-  hechicero: [
-    "......kk........",".....kpk........","....kpppk.......","...kpppppk......","..kppyppppk.....",".kkkkkkkkkkkk...","...krrrrrrk.....","..krrssssrrk....","..krrskksrrk....","..krrssssrrk....","...kPPPPPPk.....","..kPPPPPPPPk....",".kPPPPPPPPPPk...","..kkk....kkk...."
-  ],
-  gatoMago: [
-    ".....kk.....","....kppk....","...kppppk...","..kppypppk..",".kkkkkkkkkk.","k.....k.....","kk...kk.....","kwkkkwk.....","kwwwwwk.....","kwkwkwk.....","kwwwwwkkkk..","kwwwwwwwwk..","kwkkwkkwkk..","kk.kk..kk..."
-  ],
-  buho: [
-    ".....kk.....","....kppk....","...kppppk...","..kppypppk..",".kkkkkkkkkk.","..kk....kk..",".kggkkkkggk.","kggkwkkwkggk","kggkwwwwkggk",".kggkyykggk.","..kggggggk..","...kggggk...","...kk..kk..."
-  ],
-  bruja: [
-    "......kk........",
-    ".....kpk........",
-    "....kppk........",
-    "....kpppk.......",
-    "...kppyppk......",
-    "..kpppppppk.....",
-    ".kkrrrrrrrrrkk..",
-    "kppppppppppppppk",
-    ".kkggggggggggkk.",
-    ".kgggssssssgggk.",
-    ".kggssksskssggk.",
-    ".kggsrssssrsggk.",
-    ".kggssssssssggk.",
-    "..kgkPPPPPPkgk..",
-    "...kpPPwwPPpk...",
-    "..kppppppppppk..",
-    ".kppppppppppppk.",
-    ".kppppppppppppk.",
-    "..kkkkkkkkkkkk..",
-    "...kkk....kkk..."
-  ],
-  gato: [
-    "k.....k.....",
-    "kk...kk.....",
-    "kwkkkwk.....",
-    "kwwwwwk.....",
-    "kwkwkwk.....",
-    "kwrwwrk....k",
-    "kwwwwwkkkkkg",
-    "kwwwwwwwwwwk",
-    "kwwwwwwwwwwk",
-    "kwkkwkkwkkwk",
-    "kk.kk..kk.kk"
-  ],
   corazon: [
     ".kk...kk.",
     "kwrk.krrk",
@@ -226,17 +69,6 @@ export const SPRITES = {
     ".kwkRkwwwwwwk.",
     ".kkkkkkkkkkkk."
   ],
-  sombrero: [
-    "......kk......",
-    ".....kpk......",
-    "....kppk......",
-    "....kpppk.....",
-    "...kppyppk....",
-    "..kpppppppk...",
-    ".kkrrrrrrrrrkk",
-    "kppppppppppppk",
-    ".kkkkkkkkkkkk."
-  ],
   luna: [
     "..kkkk..",
     ".kyyk...",
@@ -258,30 +90,10 @@ export const SPRITES = {
     ".y.....y.",
     "....y...."
   ],
-  nube: [
-    "...kkkk.....",
-    "..kcccckkk..",
-    ".kccccccccck",
-    "kcccccccccck",
-    ".kkkkkkkkkk."
-  ],
-  chispa: [
-    "..y..",
-    "..y..",
-    "yyyyy",
-    "..y..",
-    "..y.."
-  ],
   chispaRosa: [
     ".r.",
     "rrr",
     ".r."
-  ],
-  flor: [
-    ".r.",
-    "ryr",
-    ".r.",
-    ".G."
   ],
   copa: [
     "kkkkkkkkkk",
@@ -293,15 +105,6 @@ export const SPRITES = {
     "....kk....",
     "...kyyk...",
     "..kkkkkk.."
-  ],
-  reloj: [
-    ".kkkkk.",
-    "kwwkwwk",
-    "kwwkwwk",
-    "kwwkkwk",
-    "kwwwwwk",
-    "kwwwwwk",
-    ".kkkkk."
   ],
   bandera: [
     "kkkkk..",

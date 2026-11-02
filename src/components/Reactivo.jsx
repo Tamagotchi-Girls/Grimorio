@@ -2,7 +2,7 @@ import Codigo from "./Codigo.jsx";
 import Bocadillo from "./Bocadillo.jsx";
 import { TEMAS } from "../data/contenido.js";
 
-export const TIPOS = {
+const TIPOS = {
   concepto: "Concepto",
   imprime: "¿Qué imprime?",
   error: "Encuentra el error",

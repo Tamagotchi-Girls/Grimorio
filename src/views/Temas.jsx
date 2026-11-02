@@ -1,11 +1,11 @@
 import { TEMAS } from "../data/contenido.js";
-import Paisaje from "../components/Paisaje.jsx";
+import Escena from "../components/Escena.jsx";
 
 export default function Temas({ prog, ir, perfil }) {
   return (
     <div className="vista">
       <div className="escena-wrap">
-        <Paisaje avatar={perfil.avatar} dia={prog.racha} compacto />
+        <Escena hada={perfil.avatar} dia={prog.racha} compacto />
       </div>
       <section className="intro">
         <p className="eyebrow">Repaso por tema</p>

@@ -13,7 +13,7 @@ const FRASES = [
   "Lee el código despacio, línea por línea. Ahí está la respuesta."
 ];
 
-export default function Inicio({ prog, ir, noche, perfil, materia, onMateria }) {
+export default function Inicio({ prog, ir, perfil, materia, onMateria }) {
   const h = new Date().getHours();
   const saludo = h < 12 ? "¡Buenos días!" : h < 19 ? "¡Buenas tardes!" : "¡Buenas noches!";
   const frase = useMemo(() => FRASES[Math.floor(Math.random() * FRASES.length)], []);
@@ -23,7 +23,7 @@ export default function Inicio({ prog, ir, noche, perfil, materia, onMateria }) 
   return (
     <div className="vista">
       <div className="escena-wrap">
-        <Escena noche={noche} avatar={perfil.avatar} dia={prog.racha} />
+        <Escena hada={perfil.avatar} dia={prog.racha} />
         <Bocadillo texto={`${saludo}, ${perfil.nombre}. ${frase}`} className="bocadillo-escena" />
       </div>
 

@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { PREGUNTAS } from "../data/contenido.js";
-import { TEMAS } from "../data/contenido.js";
+import { PREGUNTAS, TEMAS } from "../data/contenido.js";
 import { barajar, prepararReactivo } from "../lib/progreso.js";
 import Reactivo from "../components/Reactivo.jsx";
 import Sprite from "../components/Sprite.jsx";
-import Paisaje from "../components/Paisaje.jsx";
+import Escena from "../components/Escena.jsx";
 
 const N = 20;
 
@@ -71,7 +70,7 @@ export default function Simulacro({ prog, ir, perfil }) {
     return (
       <div className="vista">
         <div className="escena-wrap">
-          <Paisaje avatar={perfil.avatar} dia={prog.racha} />
+          <Escena hada={perfil.avatar} dia={prog.racha} />
         </div>
         <section className="intro">
           <p className="eyebrow">Simulacro de examen</p>
@@ -98,7 +97,7 @@ export default function Simulacro({ prog, ir, perfil }) {
     return (
       <div className="vista">
         <div className="escena-wrap">
-          <Paisaje avatar={perfil.avatar} dia={prog.racha} compacto />
+          <Escena hada={perfil.avatar} dia={prog.racha} compacto />
         </div>
         <div className="sim-cabeza">
           <span className="eyebrow exam-pregunta">PREGUNTA {i + 1}/{reactivos.length} · {contestadas} respondidas</span>
@@ -149,7 +148,7 @@ export default function Simulacro({ prog, ir, perfil }) {
   return (
     <div className="vista">
       <div className="escena-wrap">
-        <Paisaje avatar={perfil.avatar} dia={prog.racha} secuencia="nivel" compacto />
+        <Escena hada={perfil.avatar} dia={prog.racha} secuencia="nivel" compacto />
       </div>
       <section className="final px">
         <Sprite nombre={resultado.calificacion >= 90 ? "copa" : resultado.calificacion >= 60 ? "estrella" : "corazon"} escala={7} className={resultado.calificacion >= 90 ? "festejo" : ""} />

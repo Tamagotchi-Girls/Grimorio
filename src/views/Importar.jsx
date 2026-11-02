@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import Avatar from "../components/Avatar.jsx";
+import HadaRetrato from "../components/HadaRetrato.jsx";
 import { decodificarEnlace } from "../components/Transferencia.jsx";
-import Paisaje from "../components/Paisaje.jsx";
+import Escena from "../components/Escena.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 
 const nivel = (d) => 1 + Math.floor((d?.xp || 0) / 100);
@@ -31,11 +31,11 @@ export default function Importar({ onListo }) {
   return (
     <div className="vista importar">
       <div className="escena-wrap">
-        <Paisaje tipo="portal" avatar={datos.perfil.avatar} />
+        <Escena hada={datos.perfil.avatar} />
       <Bocadillo className="bocadillo-escena" texto={`Encontré el grimorio de ${datos.perfil.nombre}. PE nivel ${nivel(datos.progreso.PE)} y FP nivel ${nivel(datos.progreso.FP)}. ¿Cómo quieres importarlo?`} />
       </div>
       <section className="preview-perfil px">
-        <Avatar id={datos.perfil.avatar} escala={5} />
+        <HadaRetrato hada={datos.perfil.avatar} />
         <div><span className="stat-k">Perfil encontrado</span><h2>{datos.perfil.nombre}</h2><p>PE · Nivel {nivel(datos.progreso.PE)} &nbsp; FP · Nivel {nivel(datos.progreso.FP)}</p></div>
       </section>
       <button className="btn grande mint px" onClick={() => guardar("combinar")}>Combinar con lo de aquí</button>

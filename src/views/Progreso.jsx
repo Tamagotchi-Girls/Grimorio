@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { TEMAS } from "../data/contenido.js";
 import { XP_POR_NIVEL } from "../lib/progreso.js";
-import Avatar from "../components/Avatar.jsx";
+import HadaRetrato from "../components/HadaRetrato.jsx";
 import Transferencia from "../components/Transferencia.jsx";
-import Paisaje from "../components/Paisaje.jsx";
+import Escena from "../components/Escena.jsx";
 
 const fmt = (iso) => {
   try { return new Date(iso).toLocaleDateString("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); }
@@ -19,11 +19,11 @@ export default function Progreso({ prog, ir, perfil, setPerfil, materia }) {
   return (
     <div className="vista">
       <div className="escena-wrap">
-        <Paisaje avatar={perfil.avatar} dia={prog.racha} compacto />
+        <Escena hada={perfil.avatar} dia={prog.racha} compacto />
       </div>
       <section className="intro"><p className="eyebrow">Logros · {materia}</p><h1>Tu progreso</h1></section>
       <section className="nivel px">
-        <Avatar id={perfil.avatar} escala={4} />
+        <HadaRetrato hada={perfil.avatar} />
         <div className="nivel-info">
           <span className="stat-k">{perfil.nombre} · Nivel</span><span className="stat-v">{prog.nivel}</span>
           <div className="xp" aria-label={`${prog.xpNivel} de ${XP_POR_NIVEL} XP`}><i style={{ width: `${(prog.xpNivel / XP_POR_NIVEL) * 100}%` }} /></div>

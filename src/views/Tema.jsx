@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { TEMAS } from "../data/contenido.js";
-import { PREGUNTAS } from "../data/contenido.js";
+import { PREGUNTAS, TEMAS } from "../data/contenido.js";
 import { prepararReactivo } from "../lib/progreso.js";
 import Codigo from "../components/Codigo.jsx";
 import Reactivo from "../components/Reactivo.jsx";
 import Sprite from "../components/Sprite.jsx";
-import Paisaje from "../components/Paisaje.jsx";
+import Escena from "../components/Escena.jsx";
 import Bocadillo from "../components/Bocadillo.jsx";
 
 export default function Tema({ id, prog, ir, perfil }) {
@@ -13,15 +12,13 @@ export default function Tema({ id, prog, ir, perfil }) {
   const [pestana, setPestana] = useState("apuntes");
   const [pagina, setPagina] = useState(0);
   const [ronda, setRonda] = useState(0);
+  // `ronda` no se lee dentro: cambiarla fuerza a barajar de nuevo las opciones al repetir el tema.
   const reactivos = useMemo(
     () => PREGUNTAS.filter(p => p.tema === id).map(prepararReactivo),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [id, ronda]
   );
   const [i, setI] = useState(0);
   const [respuestas, setRespuestas] = useState({});
-
-  useEffect(() => { setPestana("apuntes"); setPagina(0); setI(0); setRespuestas({}); }, [id]);
 
   const actual = reactivos[i];
   const sel = respuestas[i];
@@ -56,12 +53,12 @@ export default function Tema({ id, prog, ir, perfil }) {
   return (
     <div className="vista">
       <div className="escena-wrap">
-        <Paisaje
-        avatar={perfil.avatar}
-        dia={prog.racha}
-        compacto
-        secuencia={respondida ? (actual.opcionesBarajadas[sel].correcta ? "acierto" : "fallo") : "reposo"}
-      />
+        <Escena
+          hada={perfil.avatar}
+          dia={prog.racha}
+          compacto
+          secuencia={respondida ? (actual.opcionesBarajadas[sel].correcta ? "acierto" : "fallo") : "reposo"}
+        />
       </div>
       <button className="volver" onClick={() => ir("temas")}>← Temas</button>
       <section className="intro">

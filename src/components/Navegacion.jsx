@@ -7,7 +7,7 @@ const ITEMS = [
   { ruta: "progreso", label: "LOGROS", sprite: "estrellaVerde", color: "lav" }
 ];
 
-export default function Navegacion({ ruta, ir, hada = "riley", bloqueada = false }) {
+export default function Navegacion({ ruta, ir, bloqueada = false }) {
   const base = ruta.split("/")[0] === "tema" ? "temas" : ruta.split("/")[0];
   return (
     <nav className="nav" aria-label="Secciones">

@@ -6,7 +6,7 @@ import '@fontsource/vt323/latin.css'
 import '@fontsource/vt323/latin-ext.css'
 import '@fontsource/atkinson-hyperlegible/latin.css'
 import '@fontsource/atkinson-hyperlegible/latin-ext.css'
-import App from './App'
+import App from './AppRoot.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

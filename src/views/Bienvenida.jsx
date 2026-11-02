@@ -16,7 +16,7 @@ export default function Bienvenida({ onContinuar }) {
   if (paso === "nombre") return (
     <div className="vista bienvenida">
       <div className="escena-wrap">
-        <Escena avatar="riley" />
+        <Escena hada="riley" />
       <Bocadillo className="bocadillo-escena" texto="¡Hola! Antes de abrir el grimorio… ¿Cómo te llamas?" />
       </div>
       <form className="perfil-form onboarding-form" onSubmit={siguiente}>

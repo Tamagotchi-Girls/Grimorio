@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import Hada, { HADAS } from "./Hada.jsx";
+import Hada, { normalizarHada } from "./Hada.jsx";
 
 // Escala de la escena: cabe a lo ancho de su columna y deja espacio vertical para el resto de la
 // pantalla. Se redondea hacia abajo a múltiplos de 1/8 (0.25 = 1x del paisaje original, 0.5 = 2x…)
@@ -21,9 +21,8 @@ function calcularEscala(el, compacto) {
   return Math.max(MIN, s);
 }
 
-export default function Escena({ avatar = "riley", nombre, secuencia = "reposo", compacto = false, dia = 1, className = "" }) {
-  const solicitado = nombre || avatar || "riley";
-  const hada = HADAS.some((h) => h.id === solicitado) ? solicitado : "riley";
+export default function Escena({ hada: hadaSolicitada, secuencia = "reposo", compacto = false, dia = 1, className = "" }) {
+  const hada = normalizarHada(hadaSolicitada);
   const ref = useRef(null);
   const [escala, setEscala] = useState(compacto ? 0.5 : 0.75);
 
