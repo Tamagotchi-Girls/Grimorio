@@ -7,8 +7,15 @@ import { CONTENIDO } from "./contenido.js";
 
 // Compila con gcc cada reactivo "imprime" y comprueba que la opción correcta sea exactamente
 // la salida del programa (regla de AGENTS.md). Sin gcc, las pruebas se saltan con un aviso.
-// Se ignora solo el espacio en blanco FINAL: una opción no puede mostrarlo (p. ej. un printf("%d ", n)
-// o un salto de línea al terminar), así que el texto de la opción y la salida real difieren solo ahí.
+// Se ignora solo el espacio en blanco FINAL: no se ve en pantalla (una opción de respuesta no puede
+// mostrar un espacio o un salto de línea al terminar), así que el texto de la opción y la salida real
+// difieren solo ahí. Hoy lo necesitan 4 reactivos de PE, cuyo contenido no se modifica por decisión
+// del proyecto:
+//   t2-3  termina con un salto de línea ("*\n**\n***\n")
+//   t2-5  termina con un espacio ("dos tres ")
+//   t9-3  termina con un espacio ("3 2 1 ")
+//   t9-4  termina con un espacio ("1 2 3 ")
+// Cualquier otra diferencia (incluido el espacio en blanco en medio) sigue haciendo fallar la prueba.
 const hayGcc = spawnSync("gcc", ["--version"]).status === 0;
 if (!hayGcc) console.warn("[imprime.gcc] gcc no está instalado: se omite la verificación de reactivos 'imprime'.");
 
