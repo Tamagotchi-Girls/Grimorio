@@ -40,6 +40,17 @@ fecha y el commit que lo resolvió.
   `nav.css` con sus `@media` al final) y comparar con `pnpm capturas … --estilos` y `--bordes`.
 - **Cómo comprobarlo:** estilos computados y capturas de borde iguales a `capturas/bordes-base`.
 
+## Ruido conocido de las capturas
+
+Comparar una captura contra otra tomada con el mismo código da diferencias mínimas. No se sube la tolerancia;
+estas son las pantallas que varían contra sí mismas (medido en `--bordes`, base contra base y en varias comparaciones):
+
+- **Píxeles (5–45 px, 0.001–0.009 %):** `inicio-pe` y `elegir-hada` en 740×700 y 740×701 (claro u oscuro).
+- **Estilos computados:** el margen horizontal del primer `div>div>div` (el contenedor centrado del aparato) a veces sale
+  0 y a veces su valor centrado (p. ej. 207 px). Aparece en `elegir-hada` (901×800, 1099/1100×800, 1200×900/901),
+  `inicio-pe` (431×844, 820×1180, 1099×800, 1200×900/901) y `tema-practica` (1100×800, 1499×800). Siempre es ese
+  mismo elemento y un solo valor distinto por pantalla; una diferencia en otros elementos o propiedades sí es real.
+
 ## Hecho
 
 ### `#/importar?d=…` también funciona si se cambia el hash sin recargar
