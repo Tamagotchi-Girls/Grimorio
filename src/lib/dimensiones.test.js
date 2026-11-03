@@ -5,7 +5,8 @@ import { HADA, PAISAJE, TAMANO_QR } from "./dimensiones.js";
 import { LIMITES } from "./validacion.js";
 
 const leer = (ruta) => fs.readFileSync(new URL(ruta, import.meta.url), "utf8");
-const css = leer("../index.css");
+// los estilos viven en src/styles/*.css; index.css solo los importa
+const css = fs.readdirSync(new URL("../styles/", import.meta.url)).map((f) => leer(`../styles/${f}`)).join("\n");
 const variable = (nombre) => Number(css.match(new RegExp(`--${nombre}:\\s*(\\d+)px`))?.[1]);
 
 // PNG: ancho y alto están en la cabecera IHDR (bytes 16–23).
@@ -15,7 +16,7 @@ const tamanoPNG = (ruta) => {
 };
 
 describe("dimensiones: JS y CSS dicen lo mismo", () => {
-  it("las variables de index.css son las constantes de dimensiones.js", () => {
+  it("las variables del CSS son las constantes de dimensiones.js", () => {
     expect(variable("paisaje-ancho")).toBe(PAISAJE.ancho);
     expect(variable("paisaje-alto")).toBe(PAISAJE.alto);
     expect(variable("paisaje-tira")).toBe(PAISAJE.anchoTira);

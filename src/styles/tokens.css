@@ -1,0 +1,109 @@
+/* Layout: un aparato tipo tamagotchi centrado (barra de estado arriba, pantalla, botonera abajo)
+   sobre una mesa de cuadritos. Bordes "pixel" con esquinas recortadas hechos con box-shadow. */
+:root {
+  /* tamaño de los PNG de public/sprites: los mismos valores están en lib/dimensiones.js (lo comprueba un test) */
+  --paisaje-ancho: 960px;
+  --paisaje-alto: 540px;
+  --paisaje-tira: 3840px;
+  --hada-ancho: 320px;
+  --hada-alto: 150px;
+  --hada-escena-y: 344px; /* dónde se paran los pies del hada sobre el paisaje */
+  /* aparato (crema en día y en noche, como un juguete) */
+  --chrome: #fff6d6;
+  --chrome-ink: #4b3a78;
+  --dot: #f5a3c0;
+  /* pantalla, modo día */
+  --bg: #fffbea;
+  --panel: #ffffff;
+  --panel-2: #f6f0ff;
+  --ink: #3d2f66;
+  --muted: #7a6aa3;
+  --line: #4b3a78;
+  --lav: #d6c6f5;
+  --lav-d: #9b7fd4;
+  --pink: #f7b3cb;
+  --pink-d: #e57aa3;
+  --mint: #b4e9cf;
+  --mint-d: #5fbf94;
+  --gold: #ffe27a;
+  --white: #ffffff;
+  --ok: #b4e9cf;
+  --mal: #f7b3cb;
+  /* mesa */
+  --mesa-1: #e7dbf7;
+  --mesa-2: #ded0f2;
+  /* código: siempre oscuro */
+  --code-bg: #2a2252;
+  --code-fg: #f3ecff;
+  --code-num: #7d70b0;
+  --code-kw: #f7a8c8;
+  --code-str: #a8e8c8;
+  --code-num-lit: #ffe27a;
+  --code-fn: #c9b6f5;
+  --code-com: #9488c4;
+  --code-pre: #ffb994;
+
+  --f-pixel: "DotGothic16", "Trebuchet MS", system-ui, sans-serif;
+  --f-display: "Jersey 10", "Trebuchet MS", system-ui, sans-serif;
+  --f-mono: "VT323", ui-monospace, "Courier New", monospace;
+  --f-body: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --b: 3px; /* grosor de borde pixel */
+}
+:root[data-theme="dark"] {
+  --chrome: #f1e4bd;
+  --bg: #2f2862;
+  --panel: #3b3277;
+  --panel-2: #463c88;
+  --ink: #fbf5ff;
+  --muted: #c4b8ec;
+  --line: #17122f;
+  --lav: #8c76d6;
+  --lav-d: #6d58bd;
+  --pink: #f08fb5;
+  --pink-d: #d9638f;
+  --mint: #7fd1ad;
+  --mint-d: #4aa983;
+  --gold: #ffe48a;
+  --ok: #3f8f70;
+  --mal: #a3456d;
+  --mesa-1: #1d1838;
+  --mesa-2: #241e45;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--mesa-1); }
+body {
+  margin: 0;
+  font-family: var(--f-body);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink);
+  background-color: var(--mesa-1);
+  background-image:
+    linear-gradient(45deg, var(--mesa-2) 25%, transparent 25%, transparent 75%, var(--mesa-2) 75%),
+    linear-gradient(45deg, var(--mesa-2) 25%, transparent 25%, transparent 75%, var(--mesa-2) 75%);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+  -webkit-font-smoothing: none;
+  font-variant-ligatures: none;
+  font-synthesis: none;
+  font-feature-settings: "liga" 0, "clig" 0;
+}
+button { font-family: var(--f-pixel); font-variant-ligatures: none; color: inherit; cursor: pointer; min-height: 44px; }
+b, strong { font-weight: 400; }
+h1, .sub, .camino b, .tema-info b { font-family: var(--f-display); font-weight: 400; letter-spacing: .01em; }
+button:disabled { cursor: not-allowed; }
+:focus-visible { outline: 3px solid #4b3a78; outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sprite { display: block; flex: none; }
+
+/* borde pixel: 4 sombras sólidas dejan las esquinas recortadas */
+.px {
+  box-shadow:
+    0 calc(var(--b) * -1) 0 0 var(--line),
+    0 var(--b) 0 0 var(--line),
+    calc(var(--b) * -1) 0 0 0 var(--line),
+    var(--b) 0 0 0 var(--line);
+}
+

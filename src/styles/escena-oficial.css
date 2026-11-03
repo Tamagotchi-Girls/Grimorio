@@ -1,0 +1,164 @@
+/* ───── assets oficiales: hadas y paisajes (sin ilustración generada por CSS) */
+.aparato { max-width: 1000px; }
+.pantalla { overflow: hidden; }
+.hada-img {
+  display: block; width: var(--hada-ancho); height: var(--hada-alto); max-width: none;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+}
+.avatar-oficial { display: block; width: calc(var(--hada-ancho) / 2); height: var(--hada-alto); overflow: hidden; position: relative; }
+.avatar-oficial > .hada-img { position: absolute; left: 50%; transform: translateX(-50%); }
+
+.escena-oficial {
+  --scene-scale: 1;
+  position: relative; width: 100%; height: calc(var(--paisaje-alto) * var(--scene-scale));
+  overflow: hidden; background: #2f2862; border-bottom: 3px solid var(--line);
+}
+.escena-lienzo {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: calc(var(--paisaje-ancho) * var(--scene-scale)); height: calc(var(--paisaje-alto) * var(--scene-scale));
+  background-image: var(--paisaje); background-repeat: no-repeat;
+  background-size: calc(var(--paisaje-tira) * var(--scene-scale)) calc(var(--paisaje-alto) * var(--scene-scale));
+  background-position: 0 0;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  animation: paisaje-oficial 1280ms steps(4) infinite;
+}
+.hada-en-escena {
+  position: absolute; left: calc((var(--paisaje-ancho) - var(--hada-ancho)) / 2 * var(--scene-scale)); top: calc(var(--hada-escena-y) * var(--scene-scale));
+  width: calc(var(--hada-ancho) * var(--scene-scale)); height: calc(var(--hada-alto) * var(--scene-scale));
+}
+.day-tag {
+  position: absolute; z-index: 2; left: calc(18px * var(--scene-scale)); top: calc(18px * var(--scene-scale));
+  min-height: 38px; padding: 4px 12px; background: #fff6d6; color: #3d2f66;
+  border: 3px solid #4b3a78; box-shadow: 4px 4px 0 #9b7fd4;
+  font: 25px/1 var(--f-mono);
+}
+.escena-oficial.compacta { --scene-scale: .5; height: calc(var(--paisaje-alto) * var(--scene-scale)); }
+@keyframes paisaje-oficial {
+  to { background-position-x: calc(-1 * var(--paisaje-tira) * var(--scene-scale)); }
+}
+
+.bienvenida .escena-oficial, .elegir-hada .escena-oficial, .selector-materia .escena-oficial { margin: -20px -20px 0; width: calc(100% + 40px); }
+.escena-wrap .escena-oficial { width: 100%; }
+.bienvenida .bocadillo, .elegir-hada .bocadillo, .selector-materia .bocadillo { margin-top: -3px; }
+
+.hada-fieldset, .menu-materias { border: 0; padding: 0; margin: 0; }
+.hada-fieldset > legend {
+  width: 100%; margin-bottom: 12px; font: 27px/1 var(--f-display); color: var(--ink);
+}
+.hadas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.hada-card {
+  position: relative; min-width: 0; height: 205px; overflow: hidden; cursor: pointer;
+  background: var(--panel); color: var(--ink); display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end; padding: 0 8px 10px; margin: var(--b);
+}
+.hada-card input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.hada-card .hada-img { position: absolute; left: 50%; top: 4px; transform: translateX(-50%); }
+.hada-card > span { position: relative; z-index: 2; width: calc(100% + 16px); margin: 0 -8px -10px; padding: 7px;
+  background: #fffbea; border-top: 3px solid #4b3a78; text-align: center; display: flex; flex-direction: column; }
+.hada-card strong { font: 27px/1 var(--f-display); color: #3d2f66; }
+.hada-card small { font: 18px/1.2 var(--f-mono); color: #62548a; text-transform: uppercase; }
+.hada-card:hover, .hada-card.seleccionada { background: var(--lav); }
+.hada-card.seleccionada { box-shadow: 0 -3px var(--line), 0 3px var(--line), -3px 0 var(--line), 3px 0 var(--line), inset 0 0 0 6px var(--gold); }
+.hada-card:focus-within { outline: 3px dotted #4b3a78; outline-offset: 4px; }
+.onboarding-acciones { margin-top: 18px; }
+
+.menu-materias { display: flex; flex-direction: column; gap: 15px; }
+.materia-menu {
+  min-height: 112px; margin: var(--b); padding: 14px 18px; background: var(--panel); color: var(--ink);
+  display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 13px; cursor: pointer;
+}
+.materia-menu input { position: absolute; opacity: 0; }
+.menu-cursor { visibility: hidden; font: 28px/1 var(--f-mono); }
+.materia-menu.seleccionada { background: var(--lav); transform: translateX(5px); }
+.materia-menu.seleccionada .menu-cursor { visibility: visible; }
+.materia-menu:focus-within { outline: 3px dotted #4b3a78; outline-offset: 4px; }
+.materia-menu-info { display: flex; flex-direction: column; gap: 5px; }
+.materia-menu-info strong { font: 31px/1 var(--f-display); }
+.materia-menu-info small, .materia-nivel { font-family: var(--f-mono); }
+.materia-nivel { font-size: 28px; text-align: right; display: flex; flex-direction: column; }
+.materia-nivel small { font-size: 18px; }
+.entrar-materia { align-self: flex-end; }
+
+.nav-btn .hada-img { width: 128px; height: 60px; object-fit: cover; object-position: center 35%; }
+.nav-btn:disabled { opacity: 1; cursor: default; filter: none; }
+.nav-btn:disabled .nav-icono { filter: saturate(.65); }
+.dialogo-fin { display: inline-block; margin-left: 8px; color: var(--pink-d); animation: dialogo-fin 800ms steps(2) infinite; }
+@keyframes dialogo-fin { 50% { transform: translateY(3px); } }
+.paginacion-apuntes { display: flex; align-items: center; justify-content: flex-end; gap: 14px; font: 22px/1 var(--f-mono); }
+.apunte-dialogo { font-family: var(--f-body); font-size: 19px; line-height: 1.5; }
+.practica { position: relative; }
+.xp-flotante {
+  position: absolute; z-index: 5; right: 20px; top: 120px; color: #3d2f66; background: var(--gold);
+  border: 3px solid var(--line); padding: 5px 10px; font: 28px/1 var(--f-mono);
+  animation: xp-sube 900ms steps(6) forwards;
+}
+@keyframes xp-sube { to { transform: translateY(-55px); opacity: 0; } }
+.level-up { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; pointer-events: none; }
+.level-up-flash { position: absolute; inset: 0; background: #fff; animation: level-flash 350ms steps(2) 1; opacity: 0; }
+.level-up-contenido {
+  position: relative; width: min(560px, calc(100vw - 32px)); padding: 14px; background: var(--chrome);
+  display: grid; grid-template-columns: 160px 1fr; align-items: center; color: var(--ink);
+}
+.level-up-contenido .hada-img { margin-left: -80px; }
+.level-up-contenido .bocadillo { font-size: 36px; }
+@keyframes level-flash { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+@media (max-width: 900px) {
+  .escena-oficial { --scene-scale: .75; }
+  .escena-oficial.compacta { --scene-scale: .5; }
+}
+@media (max-width: 600px) {
+  .escena-oficial, .escena-oficial.compacta { --scene-scale: .5; height: calc(var(--paisaje-alto) * var(--scene-scale)); }
+  .bienvenida .escena-oficial, .elegir-hada .escena-oficial, .selector-materia .escena-oficial { margin: -16px -16px 0; width: calc(100% + 32px); }
+  .hadas-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .hada-card { height: 190px; }
+  .materia-menu { grid-template-columns: 24px 1fr; padding: 12px 10px; }
+  .materia-nivel { grid-column: 2; flex-direction: row; justify-content: space-between; }
+  .materia-menu-info strong { font-size: 27px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .escena-lienzo { animation: none !important; background-position: 0 0 !important; }
+  .dialogo-fin, .xp-flotante { animation: none !important; }
+  .level-up-flash { display: none; }
+}
+
+/* Fidelidad tipográfica y estados de la referencia */
+:root { --f-display: "VT323", ui-monospace, monospace; }
+body { font-family: var(--f-pixel); }
+.lead, .apuntes, .explicacion, .nota, .transferencia p, .confirmar p { font-family: var(--f-body); }
+.bocadillo { font-family: var(--f-pixel); font-size: 25px; }
+.pie { font-size: 14px; }
+:focus-visible { outline: 3px dotted #4b3a78; outline-offset: 3px; }
+.nav-btn { position: relative; }
+.nav-btn + .nav-btn::before {
+  content: ""; position: absolute; left: -7px; top: 12px; bottom: 23px;
+  border-left: 4px dotted #f5a3c0;
+}
+.nav-btn.activo .nav-icono { transform: translateY(2px); box-shadow: 0 -3px var(--line), 0 1px var(--line), -3px 0 var(--line), 3px 0 var(--line); }
+.nav-btn.activo:active .nav-icono { transform: translateY(3px); }
+.temas-grid { grid-template-columns: 1fr; }
+.tema-card { grid-template-columns: 24px auto 1fr auto; }
+.tema-cursor { visibility: hidden; font: 24px/1 var(--f-mono); }
+.tema-card:hover .tema-cursor, .tema-card:focus-visible .tema-cursor { visibility: visible; }
+.exam-pregunta {
+  display: inline-flex; min-height: 44px; align-items: center; padding: 5px 10px;
+  color: #3d2f66; background: var(--gold); border: 3px solid var(--line);
+}
+@media (max-width: 420px) {
+  .pantalla-sola { margin-bottom: 104px; }
+  .estado { gap: 4px; padding: 7px 5px; font-size: 18px; overflow: visible; }
+  .estado .fecha { display: inline; margin-left: 0; }
+  .estado .hora { margin-left: 0; font-size: 18px; }
+  .estado .lv { font-size: 18px; white-space: nowrap; }
+  .estado .sprite { width: 24px; height: 24px; }
+  .bateria { display: inline-flex; transform: scale(.8); margin-inline: -4px; }
+  .tema-btn { margin-left: 0; padding: 0; }
+  .materia-status { min-width: 40px; min-height: 36px; font-size: 19px; }
+}
+
+/* ───── atajos de perfil (cambiar materia / cambiar hada) */
+.atajos-perfil { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; }
+.editar-perfil-acciones { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.elegir-hada .hada-card.seleccionada { outline: 3px dashed var(--line); outline-offset: 2px; }
+.elegir-hada .hada-card:has(input:focus-visible) { outline: 3px dashed var(--line); outline-offset: 2px; }
+

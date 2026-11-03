@@ -4,8 +4,8 @@
 //   pnpm capturas base                  # guarda capturas/base/
 //   pnpm capturas fase-2 --base base    # guarda capturas/fase-2/ y la compara con capturas/base/
 //
-// Opciones: --build (corre `vite build` antes), --solo <texto> (solo pantallas cuyo nombre lo contenga),
-// --puerto <n> (por defecto 4173), --movimiento (ver abajo).
+// Opciones: --estilos (guarda y compara los estilos computados de cada elemento), --build (corre `vite build` antes), --solo <texto> (solo pantallas cuyo nombre lo contenga),
+// --puerto <n> (por defecto 4173), --movimiento y --bordes (ver abajo).
 //
 // Modo --movimiento: lo mismo pero SIN prefers-reduced-motion, para comprobar que las animaciones
 // siguen presentes tras tocar el CSS. El reloj es falso (se avanza a mano) y las animaciones CSS se
@@ -20,6 +20,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
+import zlib from "node:zlib";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import LZString from "lz-string";
@@ -46,6 +47,8 @@ if (!nombreCarpeta) {
 const carpetaBase = opcion("base");
 const filtro = opcion("solo");
 const MOVIMIENTO = args.includes("--movimiento");
+const BORDES = args.includes("--bordes");
+const ESTILOS = args.includes("--estilos");
 const INSTANTE_ANIMACION = 650; // ms en los que se congelan las animaciones CSS en modo --movimiento
 // ms que avanza el reloj pausado: tras cargar (máquina de escribir y secuencias del hada) y tras los pasos de cada
 // pantalla. Son 500 y 150 más que cuando el reloj corría solo: ese tiempo real "de regalo" es el que fijaba los
@@ -294,8 +297,24 @@ const TODOS_LOS_VIEWPORTS = [
   { nombre: "820x1180", width: 820, height: 1180 },
   { nombre: "390x844", width: 390, height: 844 },
 ];
+// Modo --bordes: pantallas clave (Inicio, práctica de un tema, simulacro y elegir hada) en anchos y altos justo a
+// ambos lados de cada corte de los @media, para comprobar que reorganizar o unificar el CSS no mueve ninguno.
+//   pnpm capturas bordes-base --bordes
+//   pnpm capturas bordes-nuevo --bordes --base bordes-base
+const PANTALLAS_BORDES = ["inicio-pe", "tema-practica", "simulacro-jugando", "elegir-hada"];
+const borde = (width, height) => ({ nombre: `${width}x${height}`, width, height });
+const VIEWPORTS_BORDES = [
+  // cortes de ancho (max-width 420, 430, 600, 640, 900; min-width 601, 1100, 1500)
+  ...[420, 421, 430, 431, 600, 601, 640, 641].map((w) => borde(w, 844)),
+  ...[900, 901, 1099, 1100, 1499, 1500].map((w) => borde(w, 800)),
+  // corte de alto (max-height 700): celular vertical y horizontal
+  borde(390, 700), borde(390, 701), borde(740, 700), borde(740, 701),
+  // corte de proporción (aspect-ratio 4/3) con la misma anchura
+  borde(1200, 900), borde(1200, 901),
+];
+
 // en modo --movimiento solo laptop y celular
-const VIEWPORTS = MOVIMIENTO ? TODOS_LOS_VIEWPORTS.filter((v) => v.width !== 820) : TODOS_LOS_VIEWPORTS;
+const VIEWPORTS = BORDES ? VIEWPORTS_BORDES : MOVIMIENTO ? TODOS_LOS_VIEWPORTS.filter((v) => v.width !== 820) : TODOS_LOS_VIEWPORTS;
 const MODOS = ["claro", "oscuro"];
 
 // ───────── servidor de la build
@@ -392,6 +411,10 @@ async function capturarPantalla(contexto, pantalla, vp, modo, destino, animacion
     const base = `${pantalla.nombre}__${vp.nombre}__${modo}`;
     if (MOVIMIENTO) animaciones[`${base}.png`] = await congelarAnimaciones(page, INSTANTE_ANIMACION);
     await page.screenshot({ path: path.join(destino, `${base}.png`) });
+    if (ESTILOS) {
+      fs.mkdirSync(path.join(destino, "_estilos"), { recursive: true });
+      fs.writeFileSync(path.join(destino, "_estilos", `${base}.json.gz`), zlib.gzipSync(JSON.stringify(await leerEstilos(page))));
+    }
     if (pantalla.fin && !MOVIMIENTO) {
       const hayScroll = await page.evaluate(() => {
         const p = document.querySelector(".pantalla");
@@ -431,6 +454,62 @@ function compararAnimaciones(carpetaNueva, carpetaVieja) {
   }
   if (!diferencias) console.log("  Las animaciones activas por pantalla son las mismas que en la base.");
   return diferencias;
+}
+
+// ───────── estilos computados (modo --estilos): guarda, por pantalla, los estilos de TODOS los elementos y de sus
+// ::before/::after. Detecta cambios que los píxeles no ven (hover, elementos fuera de pantalla, valores equivalentes).
+async function leerEstilos(page) {
+  return page.evaluate(() => {
+    const salida = {};
+    const ruta = (el) => {
+      const partes = [];
+      for (let n = el; n && n.nodeType === 1; n = n.parentElement) {
+        const i = n.parentElement ? [...n.parentElement.children].indexOf(n) : 0;
+        partes.unshift(`${n.tagName.toLowerCase()}[${i}]`);
+      }
+      return partes.join(">");
+    };
+    const volcar = (cs) => { let t = ""; for (const p of cs) t += `${p}:${cs.getPropertyValue(p)};`; return t; };
+    for (const el of document.querySelectorAll("html, html *")) {
+      if (["SCRIPT", "STYLE", "LINK", "META", "TITLE", "HEAD", "NOSCRIPT"].includes(el.tagName)) continue;
+      salida[ruta(el)] = volcar(getComputedStyle(el));
+      for (const pseudo of ["::before", "::after"]) {
+        const cs = getComputedStyle(el, pseudo);
+        if (cs.content !== "none" && cs.content !== "normal") salida[ruta(el) + pseudo] = volcar(cs);
+      }
+    }
+    return salida;
+  });
+}
+
+function compararEstilos(carpetaNueva, carpetaVieja) {
+  const dirNuevo = path.join(carpetaNueva, "_estilos"), dirViejo = path.join(carpetaVieja, "_estilos");
+  if (!fs.existsSync(dirNuevo) || !fs.existsSync(dirViejo)) return 0;
+  const leer = (dir, f) => JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(dir, f))).toString());
+  const nombres = new Set([...fs.readdirSync(dirNuevo), ...fs.readdirSync(dirViejo)]);
+  const ordenar = (t) => (t ?? "").split(";").sort().join(";");
+  let pantallasDistintas = 0, elementosDistintos = 0;
+  const ejemplos = [];
+  for (const f of nombres) {
+    const pantalla = f.replace(".json.gz", "");
+    if (!fs.existsSync(path.join(dirNuevo, f)) || !fs.existsSync(path.join(dirViejo, f))) { pantallasDistintas++; ejemplos.push(`${pantalla}: solo en una de las dos`); continue; }
+    const a = leer(dirViejo, f), b = leer(dirNuevo, f);
+    let distinta = false;
+    for (const el of new Set([...Object.keys(a), ...Object.keys(b)])) {
+      if (a[el] === b[el] || ordenar(a[el]) === ordenar(b[el])) continue; // el orden de las propiedades no importa
+      distinta = true; elementosDistintos++;
+      if (ejemplos.length < 12) {
+        const mapa = (t) => Object.fromEntries((t ?? "").split(";").filter(Boolean).map((x) => [x.slice(0, x.indexOf(":")), x.slice(x.indexOf(":") + 1)]));
+        const ma = mapa(a[el]), mb = mapa(b[el]);
+        const props = [...new Set([...Object.keys(ma), ...Object.keys(mb)])].filter((p) => ma[p] !== mb[p]).slice(0, 4);
+        ejemplos.push(`${pantalla}  ${el.split(">").slice(-3).join(">")}  ${props.map((p) => `${p}: ${ma[p]} → ${mb[p]}`).join(" | ")}`);
+      }
+    }
+    if (distinta) pantallasDistintas++;
+  }
+  console.log(`\n  Estilos computados: pantallas distintas: ${pantallasDistintas}   elementos distintos: ${elementosDistintos}`);
+  for (const e of ejemplos) console.log(`    ${e}`);
+  return pantallasDistintas;
 }
 
 // ───────── comparación con pixelmatch
@@ -477,7 +556,8 @@ function comparar(carpetaNueva, carpetaVieja) {
   if (nuevasSinBase.length) console.log(`\n  Sin captura base: ${nuevasSinBase.join(", ")}`);
   if (viejas.size) console.log(`\n  Estaban en la base y ya no: ${[...viejas].join(", ")}`);
   const diferenciasAnimaciones = compararAnimaciones(carpetaNueva, carpetaVieja);
-  return cambios.length + nuevasSinBase.length + viejas.size + diferenciasAnimaciones;
+  const diferenciasEstilos = compararEstilos(carpetaNueva, carpetaVieja);
+  return cambios.length + nuevasSinBase.length + viejas.size + diferenciasAnimaciones + diferenciasEstilos;
 }
 
 // ───────── principal
@@ -502,7 +582,9 @@ async function main() {
   let total = 0;
   try {
     await esperar(URL_APP);
-    const pantallas = (MOVIMIENTO ? PANTALLAS_MOVIMIENTO : PANTALLAS).filter((p) => !filtro || p.nombre.includes(filtro));
+    const pantallas = (MOVIMIENTO ? PANTALLAS_MOVIMIENTO : PANTALLAS)
+      .filter((p) => !BORDES || PANTALLAS_BORDES.includes(p.nombre))
+      .filter((p) => !filtro || p.nombre.includes(filtro));
     for (const vp of VIEWPORTS) {
       for (const modo of MODOS) {
         const contexto = await navegador.newContext({
