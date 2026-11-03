@@ -2,7 +2,7 @@
 .sim-cabeza { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .marcar { display: inline-flex; align-items: center; gap: 8px; border: 0; background: var(--panel); padding: 6px 12px; margin: var(--b); font-size: 15px; }
 .marcar.on { background: var(--pink); }
-:root[data-theme="dark"] .marcar.on { color: #1d1638; }
+:root[data-theme="dark"] .marcar.on { color: var(--tinta-oscura); }
 .mapa { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; max-width: 560px; }
 .celda {
   font-family: var(--f-mono); font-size: 20px; line-height: 1;
@@ -30,7 +30,7 @@
 .reforzar { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
 .chips { display: flex; gap: 10px; flex-wrap: wrap; }
 .chip { border: 0; background: var(--pink); padding: 4px 12px; margin: var(--b); font-size: 15px; }
-:root[data-theme="dark"] .chip { color: #1d1638; }
+:root[data-theme="dark"] .chip { color: var(--tinta-oscura); }
 .revision-titulo { margin-top: 6px; }
 .revision { display: flex; flex-direction: column; gap: 18px; }
 .rev { background: var(--bg); padding: 16px; margin: var(--b); }
@@ -59,7 +59,7 @@
   padding: 8px 12px; font-family: var(--f-body); font-size: 20px; border-radius: 0;
 }
 .materia-status {
-  align-self: flex-start; background: var(--gold); color: #3d2f66; border: 3px solid #4b3a78;
+  align-self: flex-start; background: var(--gold); color: var(--ink-fijo); border: 3px solid var(--chrome-ink);
   font-family: var(--f-mono); font-size: 22px; line-height: 1; padding: 4px 8px;
 }
 .materia-status { min-width: 48px; min-height: 38px; padding: 2px 7px; margin-left: 2px; }
@@ -72,7 +72,7 @@
 }
 .transferencia p { margin: 7px 0 14px; }
 .qr-marco {
-  background: #fffbea; border: 5px solid #4b3a78; padding: 10px; min-height: 210px;
+  background: var(--crema); border: 5px solid var(--chrome-ink); padding: 10px; min-height: 210px;
   display: grid; place-items: center; box-shadow: 7px 7px 0 var(--lav);
 }
 .qr-marco img { width: 100%; display: block; image-rendering: pixelated; }

@@ -487,7 +487,16 @@ function compararEstilos(carpetaNueva, carpetaVieja) {
   if (!fs.existsSync(dirNuevo) || !fs.existsSync(dirViejo)) return 0;
   const leer = (dir, f) => JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(dir, f))).toString());
   const nombres = new Set([...fs.readdirSync(dirNuevo), ...fs.readdirSync(dirViejo)]);
-  const ordenar = (t) => (t ?? "").split(";").sort().join(";");
+  // iguales sin importar el orden de las propiedades ni las variables personalizadas (--x) que están en un solo lado
+  const mapaProps = (t) => new Map((t ?? "").split(";").filter(Boolean).map((x) => [x.slice(0, x.indexOf(":")), x.slice(x.indexOf(":") + 1)]));
+  const mismosEstilos = (ta, tb) => {
+    const ma = mapaProps(ta), mb = mapaProps(tb);
+    for (const p of new Set([...ma.keys(), ...mb.keys()])) {
+      if (p.startsWith("--") && (!ma.has(p) || !mb.has(p))) continue;
+      if (ma.get(p) !== mb.get(p)) return false;
+    }
+    return true;
+  };
   let pantallasDistintas = 0, elementosDistintos = 0;
   const ejemplos = [];
   for (const f of nombres) {
@@ -496,7 +505,7 @@ function compararEstilos(carpetaNueva, carpetaVieja) {
     const a = leer(dirViejo, f), b = leer(dirNuevo, f);
     let distinta = false;
     for (const el of new Set([...Object.keys(a), ...Object.keys(b)])) {
-      if (a[el] === b[el] || ordenar(a[el]) === ordenar(b[el])) continue; // el orden de las propiedades no importa
+      if (a[el] === b[el] || mismosEstilos(a[el], b[el])) continue;
       distinta = true; elementosDistintos++;
       if (ejemplos.length < 12) {
         const mapa = (t) => Object.fromEntries((t ?? "").split(";").filter(Boolean).map((x) => [x.slice(0, x.indexOf(":")), x.slice(x.indexOf(":") + 1)]));

@@ -1,5 +1,9 @@
 /* Layout: un aparato tipo tamagotchi centrado (barra de estado arriba, pantalla, botonera abajo)
    sobre una mesa de cuadritos. Bordes "pixel" con esquinas recortadas hechos con box-shadow. */
+/* Cortes de pantalla (@media). CSS no deja usar variables dentro de @media, así que esta es la lista única:
+   src/lib/cortes.test.js falla si algún @media usa un número que no esté aquí.
+   ancho: 420, 430, 600 (celular ≤600, tablet ≥601), 640, 900, 1100 (laptop), 1500 (laptop grande)
+   alto: 700   ·   proporción: 4/3 */
 :root {
   /* tamaño de los PNG de public/sprites: los mismos valores están en lib/dimensiones.js (lo comprueba un test) */
   --paisaje-ancho: 960px;
@@ -48,6 +52,26 @@
   --f-mono: "VT323", ui-monospace, "Courier New", monospace;
   --f-body: "Atkinson Hyperlegible", system-ui, sans-serif;
   --b: 3px; /* grosor de borde pixel */
+  /* colores fijos: valen igual en día y en noche (los de arriba cambian en [data-theme="dark"]) */
+  --ink-fijo: #3d2f66;
+  --tinta-oscura: #1d1638; /* texto sobre fondos pastel en modo noche */
+  --crema: #fffbea;
+  --crema-chrome: #fff6d6;
+  --pink-fijo: #f7b3cb;
+  --pink-suave: #fde3ef;
+  --mint-fijo: #b4e9cf;
+  --mint-suave: #e8faf1;
+  --mint-d-fijo: #5fbf94;
+  --lav-fijo: #d6c6f5;
+  --lav-d-fijo: #9b7fd4;
+  --gold-fijo: #ffe27a;
+  --gold-sol: #f5c542;
+  --muted-fijo: #62548a;
+  --muted-noche: #c4b8ec;
+  --bg-noche: #2f2862;
+  --sombra-aparato: rgba(75, 58, 120, .35);
+  --raya-deshabilitado: rgba(61,47,102,.14);
+  --brillo-nav: rgba(255,255,255,.35);
 }
 :root[data-theme="dark"] {
   --chrome: #f1e4bd;
