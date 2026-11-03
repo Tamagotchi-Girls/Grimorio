@@ -1,8 +1,8 @@
 import { useState } from "react";
 import ZonaEscena from "../components/ZonaEscena.jsx";
 import { MATERIAS } from "../data/materias.js";
-import { resumenMateria } from "../lib/progreso.js";
 import { dosDigitos } from "../lib/formato.js";
+import { resumenMateria } from "../lib/progreso.js";
 
 export default function Materias({ perfil, onElegir }) {
   const [seleccion, setSeleccion] = useState(MATERIAS[0].id);

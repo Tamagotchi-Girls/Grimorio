@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
-import { createElement as h } from "react";
 import { act, renderHook } from "@testing-library/react";
+import { createElement as h } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ContenidoProvider } from "../data/ContenidoContext.jsx";
 import { CONTENIDO } from "../data/contenido.js";
-import { useProgreso } from "./progreso.js";
+import { ContenidoProvider } from "../data/ContenidoContext.jsx";
 import { instalarAlmacenFalso } from "./almacenFalso.js";
+import { useProgreso } from "./progreso.js";
 
 const PE = CONTENIDO.PE.PREGUNTAS, FP = CONTENIDO.FP.PREGUNTAS;
 const guardar = (clave, xp, ids = []) => localStorage.setItem(clave, JSON.stringify({

@@ -152,7 +152,7 @@ body { font-family: var(--f-pixel); }
   .estado .lv { font-size: 18px; white-space: nowrap; }
   .estado .sprite { width: 24px; height: 24px; }
   .bateria { display: inline-flex; transform: scale(.8); margin-inline: -4px; }
-  .tema-btn { margin-left: 0; padding: 0; }
+  .modo-color-btn { margin-left: 0; padding: 0; }
   .materia-status { min-width: 40px; min-height: 36px; font-size: 19px; }
 }
 

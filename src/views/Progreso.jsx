@@ -1,12 +1,12 @@
 import { useState } from "react";
+import Encabezado from "../components/Encabezado.jsx";
 import Transferencia from "../components/Transferencia.jsx";
 import ZonaEscena from "../components/ZonaEscena.jsx";
-import Encabezado from "../components/Encabezado.jsx";
-import TarjetaNivel from "./progreso/TarjetaNivel.jsx";
-import FormularioNombre from "./progreso/FormularioNombre.jsx";
-import DominioPorTema from "./progreso/DominioPorTema.jsx";
-import HistorialSimulacros from "./progreso/HistorialSimulacros.jsx";
 import BorrarProgreso from "./progreso/BorrarProgreso.jsx";
+import DominioPorTema from "./progreso/DominioPorTema.jsx";
+import FormularioNombre from "./progreso/FormularioNombre.jsx";
+import HistorialSimulacros from "./progreso/HistorialSimulacros.jsx";
+import TarjetaNivel from "./progreso/TarjetaNivel.jsx";
 
 export default function Progreso({ prog, ir, perfil, setPerfil, materia }) {
   const [editando, setEditando] = useState(false);

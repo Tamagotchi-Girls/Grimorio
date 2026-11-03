@@ -1,6 +1,6 @@
 import { useState } from "react";
-import ZonaEscena from "../components/ZonaEscena.jsx";
 import Hada, { HADAS, normalizarHada } from "../components/Hada.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
 
 // Pantalla "Elige tu hada": se usa en la bienvenida y cada vez que el alumno quiere cambiar de hada.
 // El fondo cambia al paisaje del hada que tiene el foco.

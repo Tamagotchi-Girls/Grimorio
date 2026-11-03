@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
-import { createElement as h } from "react";
 import { act, renderHook } from "@testing-library/react";
+import { createElement as h } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ContenidoProvider } from "../data/ContenidoContext.jsx";
 import { CONTENIDO } from "../data/contenido.js";
+import { ContenidoProvider } from "../data/ContenidoContext.jsx";
 import { totalSimulacro } from "./conteos.js";
 import { mensajeConfirmacion, useSimulacro } from "./useSimulacro.js";
 

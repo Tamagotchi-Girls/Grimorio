@@ -1,32 +1,32 @@
 import { useRef, useState } from "react";
 import Aparato from "./components/Aparato.jsx";
-import Inicio from "./views/Inicio.jsx";
-import Temas from "./views/Temas.jsx";
-import Tema from "./views/Tema.jsx";
-import Simulacro from "./views/Simulacro.jsx";
-import Progreso from "./views/Progreso.jsx";
-import Bienvenida from "./views/Bienvenida.jsx";
-import Materias from "./views/Materias.jsx";
-import Importar from "./views/Importar.jsx";
-import ElegirHada from "./views/ElegirHada.jsx";
-import { resumenMateria, useProgreso } from "./lib/progreso.js";
-import { CONTENIDO } from "./data/contenido.js";
-import { ContenidoProvider, useContenido } from "./data/ContenidoContext.jsx";
-import { normalizarPerfil } from "./lib/validacion.js";
+import AvisoAlmacenamiento from "./components/AvisoAlmacenamiento.jsx";
 import Bocadillo from "./components/Bocadillo.jsx";
 import Hada from "./components/Hada.jsx";
-import AvisoAlmacenamiento from "./components/AvisoAlmacenamiento.jsx";
+import { CONTENIDO } from "./data/contenido.js";
+import { ContenidoProvider, useContenido } from "./data/ContenidoContext.jsx";
 import { CLAVES, escribirJSON, escribirTexto, leerJSON, leerTexto, quitar } from "./lib/almacenamiento.js";
-import { useRuta } from "./lib/ruta.js";
-import { useTema } from "./lib/tema.js";
 import { useAvisoNivel } from "./lib/avisoNivel.js";
+import { useModoColor } from "./lib/modoColor.js";
+import { resumenMateria, useProgreso } from "./lib/progreso.js";
+import { useRuta } from "./lib/ruta.js";
+import { normalizarPerfil } from "./lib/validacion.js";
+import Bienvenida from "./views/Bienvenida.jsx";
+import ElegirHada from "./views/ElegirHada.jsx";
+import Importar from "./views/Importar.jsx";
+import Inicio from "./views/Inicio.jsx";
+import Materias from "./views/Materias.jsx";
+import Progreso from "./views/Progreso.jsx";
+import Simulacro from "./views/Simulacro.jsx";
+import Tema from "./views/Tema.jsx";
+import Temas from "./views/Temas.jsx";
 
 const materiaGuardada = () => {
   const m = leerTexto(CLAVES.materiaActiva);
   return Object.hasOwn(CONTENIDO, m) ? m : null;
 };
 
-function Aplicacion({ perfil, setPerfil, materia, setMateria, ruta, ir, tema, onTema }) {
+function Aplicacion({ perfil, setPerfil, materia, setMateria, ruta, ir, modoColor, onModoColor }) {
   const { PREGUNTAS } = useContenido();
   const prog = useProgreso();
   const levelUp = useAvisoNivel(prog.nivel);
@@ -58,7 +58,7 @@ function Aplicacion({ perfil, setPerfil, materia, setMateria, ruta, ir, tema, on
   return (
     <Aparato
       superposicion={aviso}
-      barra={{ nivel: prog.nivel, dominadas: prog.dominadas, total: PREGUNTAS.length, tema, onTema, materia, onMateria: cambiarMateria }}
+      barra={{ nivel: prog.nivel, dominadas: prog.dominadas, total: PREGUNTAS.length, modoColor, onModoColor, materia, onMateria: cambiarMateria }}
       id="contenido"
       ruta={ruta}
       ir={ir}
@@ -74,7 +74,7 @@ export default function App() {
   const [perfil, setPerfilState] = useState(() => normalizarPerfil(leerJSON(CLAVES.perfil)));
   const [materia, setMateriaState] = useState(materiaGuardada);
   const [seleccionando, setSeleccionando] = useState(() => !materiaGuardada());
-  const [tema, alternarTema] = useTema();
+  const [modoColor, alternarModoColor] = useModoColor();
   const { ruta, hash, ir } = useRuta();
   const ultimaMateria = useRef(materia);
   if (materia) ultimaMateria.current = materia;
@@ -90,7 +90,7 @@ export default function App() {
     const { nivel, dominadas, total } = resumenMateria(mostrada);
     contenido = (
       <Aparato
-        barra={{ nivel, dominadas, total, tema, onTema: alternarTema, materia: mostrada, onMateria: () => {} }}
+        barra={{ nivel, dominadas, total, modoColor, onModoColor: alternarModoColor, materia: mostrada, onMateria: () => {} }}
         sola={!importar}
         bloqueada
       >
@@ -104,7 +104,7 @@ export default function App() {
     // y el progreso ya no dependen de ella.
     contenido = (
       <ContenidoProvider materia={materia}>
-        <Aplicacion key={materia} perfil={perfil} setPerfil={setPerfil} materia={materia} setMateria={abrirSelector} ruta={ruta} ir={ir} tema={tema} onTema={alternarTema} />
+        <Aplicacion key={materia} perfil={perfil} setPerfil={setPerfil} materia={materia} setMateria={abrirSelector} ruta={ruta} ir={ir} modoColor={modoColor} onModoColor={alternarModoColor} />
       </ContenidoProvider>
     );
   }

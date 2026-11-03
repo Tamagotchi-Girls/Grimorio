@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Sprite from "./Sprite.jsx";
 import { useMovimientoReducido } from "../lib/movimiento.js";
+import Sprite from "./Sprite.jsx";
 
 // Caja de diálogo con efecto de máquina de escribir.
 export default function Bocadillo({ texto, className = "" }) {

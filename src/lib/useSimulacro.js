@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useContenido } from "../data/ContenidoContext.jsx";
-import { calificar, nuevoSimulacro, respuestasARegistrar } from "./simulacro.js";
 import { irAlInicio } from "./scroll.js";
+import { calificar, nuevoSimulacro, respuestasARegistrar } from "./simulacro.js";
 import { useTeclasRespuesta } from "./useTeclasRespuesta.js";
 
 // Texto del cuadro "¿Terminar?": cuántas faltan por responder y cuántas se marcaron para revisar.

@@ -1,8 +1,8 @@
-import { useContenido } from "../../data/ContenidoContext.jsx";
-import { textoReglaSimulacro } from "../../lib/conteos.js";
+import Encabezado from "../../components/Encabezado.jsx";
 import Sprite from "../../components/Sprite.jsx";
 import ZonaEscena from "../../components/ZonaEscena.jsx";
-import Encabezado from "../../components/Encabezado.jsx";
+import { useContenido } from "../../data/ContenidoContext.jsx";
+import { textoReglaSimulacro } from "../../lib/conteos.js";
 
 const mejorCalificacion = (simulacros) => Math.max(...simulacros.map((s) => s.calificacion));
 

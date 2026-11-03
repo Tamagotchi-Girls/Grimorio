@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
-import { createElement as h } from "react";
 import { act, renderHook } from "@testing-library/react";
+import { createElement as h } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { ContenidoProvider } from "../data/ContenidoContext.jsx";
 import { CONTENIDO } from "../data/contenido.js";
+import { ContenidoProvider } from "../data/ContenidoContext.jsx";
 import { estadosDeRonda, mensajeResultado, secuenciaDeRespuesta, usePractica } from "./usePractica.js";
 
 const envoltorio = (materia) => ({ children }) => h(ContenidoProvider, { materia }, children);

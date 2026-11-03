@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import HadaRetrato from "../components/HadaRetrato.jsx";
-import { decodificarEnlace } from "../lib/transferencia.js";
-import { guardarProgreso, leerProgreso } from "../lib/progreso.js";
-import { combinarProgreso } from "../lib/validacion.js";
-import { nivelDe } from "../lib/nivel.js";
-import { MATERIAS } from "../data/materias.js";
-import ZonaEscena from "../components/ZonaEscena.jsx";
 import Confirmar from "../components/Confirmar.jsx";
+import HadaRetrato from "../components/HadaRetrato.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
+import { MATERIAS } from "../data/materias.js";
+import { nivelDe } from "../lib/nivel.js";
+import { guardarProgreso, leerProgreso } from "../lib/progreso.js";
+import { decodificarEnlace } from "../lib/transferencia.js";
+import { combinarProgreso } from "../lib/validacion.js";
 
 const nivel = (d) => nivelDe(d?.xp);
 

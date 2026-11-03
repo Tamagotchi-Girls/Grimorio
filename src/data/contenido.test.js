@@ -3,9 +3,9 @@ import path from "node:path";
 import { createElement as h } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { useProgreso } from "../lib/progreso.js";
 import { CONTENIDO, contenidoDe } from "./contenido.js";
 import { ContenidoProvider, useContenido } from "./ContenidoContext.jsx";
-import { useProgreso } from "../lib/progreso.js";
 
 describe("contenidoDe", () => {
   it("devuelve la materia con sus temas y reactivos", () => {

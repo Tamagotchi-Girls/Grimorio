@@ -1,6 +1,6 @@
-import Codigo from "./Codigo.jsx";
-import Bocadillo from "./Bocadillo.jsx";
 import { useContenido } from "../data/ContenidoContext.jsx";
+import Bocadillo from "./Bocadillo.jsx";
+import Codigo from "./Codigo.jsx";
 
 const TIPOS = {
   concepto: "Concepto",

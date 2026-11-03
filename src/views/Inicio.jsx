@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import ZonaEscena from "../components/ZonaEscena.jsx";
-import Encabezado from "../components/Encabezado.jsx";
-import Stat from "../components/Stat.jsx";
 import BarraXP from "../components/BarraXP.jsx";
+import Encabezado from "../components/Encabezado.jsx";
 import Sprite from "../components/Sprite.jsx";
+import Stat from "../components/Stat.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
 import { useContenido } from "../data/ContenidoContext.jsx";
 import { materiaPorId } from "../data/materias.js";
 import { textoCaminoSimulacro, textoCaminoTemas, textoResumenMateria, textoTemasCompletos } from "../lib/conteos.js";

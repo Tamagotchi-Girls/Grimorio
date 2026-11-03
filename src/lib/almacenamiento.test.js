@@ -30,7 +30,7 @@ describe("claves", () => {
     expect(CLAVES).toEqual({
       perfil: "grimorio-perfil-v1",
       materiaActiva: "grimorio-materia-activa",
-      tema: "guia-pe-tema",
+      modoColor: "guia-pe-tema",
     });
     expect(claveProgreso("PE")).toBe("guia-pe-progreso-v1");
     expect(claveProgreso("FP")).toBe("guia-fp-progreso-v1");

@@ -1,8 +1,8 @@
 // Normalización de perfil y progreso. La usan igual la lectura de localStorage y la importación por
 // enlace: nada que venga de fuera (almacenamiento editado a mano, enlace ajeno) llega a la app sin
 // pasar por aquí. Siempre devuelven datos nuevos y bien formados; lo irrecuperable se descarta.
-import { CONTENIDO } from "../data/contenido.js";
 import { normalizarHada } from "../components/Hada.jsx";
+import { CONTENIDO } from "../data/contenido.js";
 import { MAX_DIAS_RACHA, MAX_SIMULACROS } from "./constantes.js";
 
 export const LIMITES = Object.freeze({

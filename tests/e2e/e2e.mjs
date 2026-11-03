@@ -410,14 +410,14 @@ async function correr() {
     await p.goto(URL_APP); await sembrar(p, SEMBRADO); await p.reload(); await p.waitForTimeout(400);
     const tema = () => p.evaluate(() => document.documentElement.dataset.theme);
     assert.equal(await tema(), "light");
-    await p.locator(".tema-btn").click();
+    await p.locator(".modo-color-btn").click();
     assert.equal(await tema(), "dark");
     assert.equal(await leerAlmacen(p, "guia-pe-tema"), "dark");
     await p.reload(); await p.waitForTimeout(400);
     assert.equal(await tema(), "dark");
     await p.locator(".cambiar-materia").click(); // pantalla previa: mismo tema
     assert.equal(await tema(), "dark");
-    await p.locator(".tema-btn").click();
+    await p.locator(".modo-color-btn").click();
     assert.equal(await tema(), "light");
     await p.getByRole("button", { name: /ENTRAR/ }).click(); await p.waitForTimeout(300);
     assert.equal(await tema(), "light");

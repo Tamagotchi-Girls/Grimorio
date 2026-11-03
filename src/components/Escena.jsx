@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import Hada, { normalizarHada } from "./Hada.jsx";
-import { dosDigitos } from "../lib/formato.js";
 import { PAISAJE } from "../lib/dimensiones.js";
+import { dosDigitos } from "../lib/formato.js";
+import Hada, { normalizarHada } from "./Hada.jsx";
 
 // Escala de la escena: cabe a lo ancho de su columna y deja espacio vertical para el resto de la
 // pantalla. Se redondea hacia abajo a múltiplos de 1/8 (0.25 = 1x del paisaje original, 0.5 = 2x…)

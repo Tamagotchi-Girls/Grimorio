@@ -133,7 +133,7 @@ describe("CursorMenu", () => {
 });
 
 describe("Aparato", () => {
-  const barra = { nivel: 2, dominadas: 0, total: 60, tema: "light", onTema() {}, materia: "PE", onMateria() {} };
+  const barra = { nivel: 2, dominadas: 0, total: 60, modoColor: "light", onModoColor() {}, materia: "PE", onMateria() {} };
   const salida = (props) => renderToStaticMarkup(h(Aparato, { barra, ...props }, h("p", null, "hola")));
   it("dibuja barra, pantalla, navegación y pie, en ese orden, dentro de .aparato", () => {
     const s = salida({ id: "contenido" });

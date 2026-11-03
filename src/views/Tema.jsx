@@ -1,9 +1,9 @@
 import { useState } from "react";
+import Encabezado from "../components/Encabezado.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
 import { useContenido } from "../data/ContenidoContext.jsx";
 import { temaSiguiente, textoNumeroDeTema } from "../lib/conteos.js";
 import { secuenciaDeRespuesta, usePractica } from "../lib/usePractica.js";
-import ZonaEscena from "../components/ZonaEscena.jsx";
-import Encabezado from "../components/Encabezado.jsx";
 import TemaApuntes from "./tema/TemaApuntes.jsx";
 import TemaPractica from "./tema/TemaPractica.jsx";
 import TemaResultado from "./tema/TemaResultado.jsx";

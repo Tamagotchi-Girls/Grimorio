@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { CONTENIDO } from "../data/contenido.js";
 import { useContenido } from "../data/ContenidoContext.jsx";
 import { claveProgreso, escribirJSON, leerJSON } from "./almacenamiento.js";
+import { MAX_DIAS_RACHA, MAX_SIMULACROS } from "./constantes.js";
 import { XP_POR_ACIERTO, nivelDe, xpEnNivel } from "./nivel.js";
 import { normalizarProgreso, progresoVacio } from "./validacion.js";
-import { MAX_DIAS_RACHA, MAX_SIMULACROS } from "./constantes.js";
 
 const hoy = () => new Date().toISOString().slice(0, 10);
 const conDia = (dias = []) => [...new Set([...dias, hoy()])].slice(-MAX_DIAS_RACHA);

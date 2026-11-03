@@ -1,11 +1,11 @@
-import { useContenido } from "../../data/ContenidoContext.jsx";
-import { XP_POR_ACIERTO } from "../../lib/nivel.js";
-import { medallaDeSimulacro } from "../../lib/medallas.js";
-import { temasFlojos } from "../../lib/simulacro.js";
+import FilaTema from "../../components/FilaTema.jsx";
 import Reactivo from "../../components/Reactivo.jsx";
 import Sprite from "../../components/Sprite.jsx";
 import ZonaEscena from "../../components/ZonaEscena.jsx";
-import FilaTema from "../../components/FilaTema.jsx";
+import { useContenido } from "../../data/ContenidoContext.jsx";
+import { medallaDeSimulacro } from "../../lib/medallas.js";
+import { XP_POR_ACIERTO } from "../../lib/nivel.js";
+import { temasFlojos } from "../../lib/simulacro.js";
 
 const claseBarra = ({ ok, total }) => (ok === total ? "ok" : ok === 0 ? "mal" : "");
 

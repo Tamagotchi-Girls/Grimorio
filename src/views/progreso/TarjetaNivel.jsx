@@ -1,6 +1,6 @@
-import { XP_POR_NIVEL } from "../../lib/nivel.js";
-import HadaRetrato from "../../components/HadaRetrato.jsx";
 import BarraXP from "../../components/BarraXP.jsx";
+import HadaRetrato from "../../components/HadaRetrato.jsx";
+import { XP_POR_NIVEL } from "../../lib/nivel.js";
 
 const textoRacha = (racha) => `racha de ${racha} día${racha === 1 ? "" : "s"}`;
 

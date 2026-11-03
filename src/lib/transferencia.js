@@ -1,7 +1,7 @@
 import LZString from "lz-string";
+import { MATERIAS } from "../data/materias.js";
 import { leerProgreso } from "./progreso.js";
 import { normalizarPerfil, normalizarTransferencia } from "./validacion.js";
-import { MATERIAS } from "../data/materias.js";
 
 // Tamaños máximos de un enlace de importación. Un enlace real con las dos materias llena (y todos
 // los simulacros) mide unos 5 100 caracteres comprimido y unos 15 000 de JSON (lo mide y exige

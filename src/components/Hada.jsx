@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useMovimientoReducido } from "../lib/movimiento.js";
 import { HADA as TAMANO } from "../lib/dimensiones.js";
+import { useMovimientoReducido } from "../lib/movimiento.js";
 
 export const HADAS = [
   { id: "riley", nombre: "Riley", elemento: "tierra", paisaje: "Bosque de cristal" },

@@ -1,7 +1,7 @@
+import Confirmar from "../../components/Confirmar.jsx";
 import Reactivo from "../../components/Reactivo.jsx";
 import Sprite from "../../components/Sprite.jsx";
 import ZonaEscena from "../../components/ZonaEscena.jsx";
-import Confirmar from "../../components/Confirmar.jsx";
 import { mensajeConfirmacion } from "../../lib/useSimulacro.js";
 
 const claseCelda = (s, k) =>

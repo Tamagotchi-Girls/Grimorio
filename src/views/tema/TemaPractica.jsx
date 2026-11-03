@@ -1,9 +1,9 @@
+import Pips from "../../components/Pips.jsx";
+import Reactivo from "../../components/Reactivo.jsx";
 import { XP_POR_ACIERTO } from "../../lib/nivel.js";
 import { enCampo, textoTeclas } from "../../lib/teclado.js";
 import { estadosDeRonda } from "../../lib/usePractica.js";
 import { useTeclasRespuesta } from "../../lib/useTeclasRespuesta.js";
-import Pips from "../../components/Pips.jsx";
-import Reactivo from "../../components/Reactivo.jsx";
 
 // `p` es lo que devuelve usePractica(). Está montado solo mientras se practica, así que las teclas
 // se activan al entrar y se sueltan al salir (o al terminar la ronda).

@@ -99,6 +99,6 @@ html, body, #root { height: 100%; }
   .estado .hora { margin-left: auto; white-space: nowrap; }
   .bateria { transform: none; margin-inline: 0 6px; }
   .materia-status { min-width: 40px; }
-  .tema-btn { margin-left: 2px; }
+  .modo-color-btn { margin-left: 2px; }
 }
 

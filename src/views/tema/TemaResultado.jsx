@@ -1,5 +1,5 @@
-import { mensajeResultado } from "../../lib/usePractica.js";
 import Sprite from "../../components/Sprite.jsx";
+import { mensajeResultado } from "../../lib/usePractica.js";
 
 export default function TemaResultado({ aciertos, total, medalla, siguienteTema, ir, onVerApuntes, onRepetir }) {
   return (

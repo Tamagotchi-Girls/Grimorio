@@ -1,28 +1,28 @@
 // @vitest-environment happy-dom
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { useTema } from "./tema.js";
 import { DURACION_LEVEL_UP_MS, useAvisoNivel } from "./avisoNivel.js";
+import { useModoColor } from "./modoColor.js";
 
 const sistemaOscuro = (oscuro) => vi.stubGlobal("matchMedia", () => ({ matches: oscuro }));
 beforeEach(() => { localStorage.clear(); document.documentElement.removeAttribute("data-theme"); });
 afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
 
-describe("useTema", () => {
+describe("useModoColor", () => {
   it("sin nada guardado usa el del sistema y lo pone en <html data-theme>", () => {
     sistemaOscuro(true);
-    const { result } = renderHook(() => useTema());
+    const { result } = renderHook(() => useModoColor());
     expect(result.current[0]).toBe("dark");
     expect(document.documentElement.dataset.theme).toBe("dark");
   });
   it("lo guardado manda sobre el sistema", () => {
     sistemaOscuro(true);
     localStorage.setItem("guia-pe-tema", "light");
-    expect(renderHook(() => useTema()).result.current[0]).toBe("light");
+    expect(renderHook(() => useModoColor()).result.current[0]).toBe("light");
   });
   it("alternar cambia, actualiza <html> y guarda con la misma clave de siempre", () => {
     sistemaOscuro(false);
-    const { result } = renderHook(() => useTema());
+    const { result } = renderHook(() => useModoColor());
     act(() => result.current[1]());
     expect(result.current[0]).toBe("dark");
     expect(document.documentElement.dataset.theme).toBe("dark");
@@ -33,10 +33,10 @@ describe("useTema", () => {
   });
   it("lo guardado se recupera al montar de nuevo", () => {
     sistemaOscuro(false);
-    const primero = renderHook(() => useTema());
+    const primero = renderHook(() => useModoColor());
     act(() => primero.result.current[1]());
     primero.unmount();
-    expect(renderHook(() => useTema()).result.current[0]).toBe("dark");
+    expect(renderHook(() => useModoColor()).result.current[0]).toBe("dark");
   });
 });
 

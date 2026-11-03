@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import Sprite from "./Sprite.jsx";
 import { dosDigitos } from "../lib/formato.js";
+import Sprite from "./Sprite.jsx";
 
-export default function BarraEstado({ nivel, dominadas, total, tema, onTema, materia, onMateria }) {
+export default function BarraEstado({ nivel, dominadas, total, modoColor, onModoColor, materia, onMateria }) {
   const [ahora, setAhora] = useState(new Date());
   useEffect(() => {
     const id = setInterval(() => setAhora(new Date()), 15000);
@@ -22,8 +22,8 @@ export default function BarraEstado({ nivel, dominadas, total, tema, onTema, mat
       <span className="bateria" title={`${dominadas} de ${total} reactivos dominados`} aria-label={`Batería de estudio: ${dominadas} de ${total} reactivos dominados`}>
         {[0, 1, 2, 3].map(i => <i key={i} className={i < barras ? "on" : ""} />)}
       </span>
-      <button className="tema-btn" onClick={onTema} aria-label={tema === "dark" ? "Cambiar a modo día" : "Cambiar a modo noche"} title={tema === "dark" ? "Modo día" : "Modo noche"}>
-        <Sprite nombre={tema === "dark" ? "sol" : "luna"} escala={3} />
+      <button className="modo-color-btn" onClick={onModoColor} aria-label={modoColor === "dark" ? "Cambiar a modo día" : "Cambiar a modo noche"} title={modoColor === "dark" ? "Modo día" : "Modo noche"}>
+        <Sprite nombre={modoColor === "dark" ? "sol" : "luna"} escala={3} />
       </button>
     </header>
   );

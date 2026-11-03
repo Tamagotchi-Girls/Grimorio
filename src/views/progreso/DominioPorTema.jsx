@@ -1,6 +1,6 @@
-import { useContenido } from "../../data/ContenidoContext.jsx";
 import FilaTema from "../../components/FilaTema.jsx";
 import Pips from "../../components/Pips.jsx";
+import { useContenido } from "../../data/ContenidoContext.jsx";
 
 export default function DominioPorTema({ prog, ir }) {
   const { TEMAS } = useContenido();

@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { useContenido } from "../data/ContenidoContext.jsx";
-import { esCorrecta } from "./simulacro.js";
-import { prepararReactivo } from "./progreso.js";
 import { medallaDeTema } from "./medallas.js";
+import { prepararReactivo } from "./progreso.js";
+import { esCorrecta } from "./simulacro.js";
 
 // Un solo texto para el final de la práctica de un tema, según la medalla.
 export function mensajeResultado(medalla) {

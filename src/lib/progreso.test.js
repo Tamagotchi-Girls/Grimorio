@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { barajar, prepararReactivo, resumenMateria, resumenTema } from "./progreso.js";
 import { CONTENIDO } from "../data/contenido.js";
+import { barajar, prepararReactivo, resumenMateria, resumenTema } from "./progreso.js";
 
 describe("barajar", () => {
   it("devuelve una permutación sin tocar el original", () => {

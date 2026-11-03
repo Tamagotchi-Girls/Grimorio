@@ -1,8 +1,8 @@
-import { useContenido } from "../data/ContenidoContext.jsx";
-import ZonaEscena from "../components/ZonaEscena.jsx";
-import Encabezado from "../components/Encabezado.jsx";
 import CursorMenu from "../components/CursorMenu.jsx";
+import Encabezado from "../components/Encabezado.jsx";
 import Pips from "../components/Pips.jsx";
+import ZonaEscena from "../components/ZonaEscena.jsx";
+import { useContenido } from "../data/ContenidoContext.jsx";
 import { dosDigitos } from "../lib/formato.js";
 
 export default function Temas({ prog, ir, perfil }) {

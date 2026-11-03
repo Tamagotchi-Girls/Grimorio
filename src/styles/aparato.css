@@ -34,8 +34,8 @@
 .bateria i.on { background: var(--mint-d); }
 .bateria i.on:nth-child(3) { background: var(--lav-d); }
 .bateria i.on:nth-child(4) { background: var(--lav-d); }
-.tema-btn { background: none; border: 0; padding: 2px; margin-left: 6px; }
-.tema-btn { --line: var(--chrome-ink); --gold: var(--gold-sol); }
+.modo-color-btn { background: none; border: 0; padding: 2px; margin-left: 6px; }
+.modo-color-btn { --line: var(--chrome-ink); --gold: var(--gold-sol); }
 .estado .sprite { --line: var(--chrome-ink); }
 
 .pantalla {

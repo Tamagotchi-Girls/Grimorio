@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
-import { crearEnlace } from "../lib/transferencia.js";
+import { useEffect, useMemo, useState } from "react";
 import { TAMANO_QR } from "../lib/dimensiones.js";
+import { crearEnlace } from "../lib/transferencia.js";
 
 export default function Transferencia({ perfil }) {
   const enlace = useMemo(() => crearEnlace(perfil), [perfil]);

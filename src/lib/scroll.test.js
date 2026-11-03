@@ -1,13 +1,13 @@
 // @vitest-environment happy-dom
-import { createElement as h } from "react";
 import { act, renderHook } from "@testing-library/react";
+import { createElement as h } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ContenidoProvider } from "../data/ContenidoContext.jsx";
 import { CONTENIDO } from "../data/contenido.js";
-import { useProgreso } from "./progreso.js";
+import { ContenidoProvider } from "../data/ContenidoContext.jsx";
 import { instalarAlmacenFalso } from "./almacenFalso.js";
-import { irAlInicio } from "./scroll.js";
+import { useProgreso } from "./progreso.js";
 import { useRuta } from "./ruta.js";
+import { irAlInicio } from "./scroll.js";
 import { useSimulacro } from "./useSimulacro.js";
 
 const PE = CONTENIDO.PE.PREGUNTAS;

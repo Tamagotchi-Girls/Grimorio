@@ -1,4 +1,4 @@
-// Tamaños (en px) de los PNG de public/sprites. Los mismos valores están en index.css como variables
+// Tamaños (en px) de los PNG de public/sprites. Los mismos valores están en styles/tokens.css como variables
 // (--paisaje-ancho, --paisaje-alto, --paisaje-tira, --hada-ancho, --hada-alto); dimensiones.test.js
 // comprueba que no se desfasen.
 

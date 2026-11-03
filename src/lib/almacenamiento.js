@@ -7,7 +7,7 @@
 export const CLAVES = Object.freeze({
   perfil: "grimorio-perfil-v1",
   materiaActiva: "grimorio-materia-activa",
-  tema: "guia-pe-tema",
+  modoColor: "guia-pe-tema", // el valor no cambia: ya hay gente con esa clave guardada
 });
 
 export const claveProgreso = (materia) => (materia === "FP" ? "guia-fp-progreso-v1" : "guia-pe-progreso-v1");
