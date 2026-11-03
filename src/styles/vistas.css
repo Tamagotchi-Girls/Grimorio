@@ -60,9 +60,9 @@
 }
 .materia-status {
   align-self: flex-start; background: var(--gold); color: var(--ink-fijo); border: 3px solid var(--chrome-ink);
-  font-family: var(--f-mono); font-size: 22px; line-height: 1; padding: 4px 8px;
+  font-family: var(--f-mono); font-size: 22px; line-height: 1; padding: 2px 7px;
+  min-width: 48px; min-height: 38px; margin-left: 2px;
 }
-.materia-status { min-width: 48px; min-height: 38px; padding: 2px 7px; margin-left: 2px; }
 .dominio-barra { height: 18px; border: 3px solid var(--line); background: var(--panel); }
 .dominio-barra i { display: block; height: 100%; background: repeating-linear-gradient(90deg, var(--pink-d) 0 8px, var(--pink) 8px 11px); }
 .cambiar-materia { align-self: flex-start; }

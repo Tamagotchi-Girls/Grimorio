@@ -28,6 +28,18 @@ fecha y el commit que lo resolvió.
   `validacion.js`/`resumenMateria` dejen de leer `CONTENIDO`.
 - **Cómo comprobarlo:** `pnpm build` debe generar un fragmento aparte por materia y las pruebas H del e2e deben seguir pasando.
 
+## Después de la fase 10
+
+### Selectores repetidos que no se fusionaron (S6)
+
+- **Qué pasa hoy:** `.aparato`, `.estado`, `.nav`, `.nav-icono`, `.pantalla`, `.pie`, `.mesa`, `.bocadillo`, `.hada-card`
+  se declaran varias veces, pero cada repetición está en otro archivo de `src/styles/` o dentro de un `@media`
+  distinto (base → 640 → 420 → 600 → altura 700…). Fusionarlas obliga a mover reglas a través de archivos o de
+  `@media`, y eso cambia la cascada. Solo `.materia-status` (dos reglas seguidas en `vistas.css`) se fusionó.
+- **Qué hacer si algún día se quiere:** un componente a la vez (p. ej. mover todo lo de `.nav` a un archivo
+  `nav.css` con sus `@media` al final) y comparar con `pnpm capturas … --estilos` y `--bordes`.
+- **Cómo comprobarlo:** estilos computados y capturas de borde iguales a `capturas/bordes-base`.
+
 ## Hecho
 
 ### `#/importar?d=…` también funciona si se cambia el hash sin recargar
